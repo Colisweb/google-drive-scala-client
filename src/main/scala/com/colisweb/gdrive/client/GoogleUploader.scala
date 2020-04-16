@@ -2,35 +2,27 @@ package com.colisweb.gdrive.client
 
 import java.io.File
 
-import cats.effect.Sync
-import cats.implicits._
+class GoogleUploader(driveClient: GoogleDriveApiClient) {
 
-class GoogleUploader[F[_]](driveClient: GoogleDriveApiClient[F])(implicit F: Sync[F]) {
-
-  def uploadDirectoryTo(parentId: String, destinationPath: List[String], localFolder: File): F[String] = {
-
-    for {
-      files    <- F.delay(localFolder.listFiles.filter(_.isFile).toList)
-      folderId <- uploadPathTo(parentId, destinationPath)
-      _        <- uploadFilesTo(folderId, files)
-    } yield folderId
+  def uploadDirectoryTo(parentId: String, destinationPath: List[String], localFolder: File): String = {
+    val files    = localFolder.listFiles.filter(_.isFile).toList
+    val folderId = uploadPathTo(parentId, destinationPath)
+    uploadFilesTo(folderId, files)
+    folderId
   }
 
-  private def uploadPathTo(parentId: String, path: List[String]): F[String] =
-    path.foldM(parentId)(findOrCreateFolder)
+  private def uploadPathTo(parentId: String, path: List[String]): String =
+    path.fold(parentId)(findOrCreateFolder)
 
-  private def uploadFilesTo(folderId: String, files: List[File]): F[Unit] =
-    files.traverse_(file =>
+  private def uploadFilesTo(folderId: String, files: List[File]): Unit =
+    files.foreach(file =>
       driveClient.uploadTo(file.getName, file, folderId, GoogleMimeType.csvFile, Some(GoogleMimeType.spreadsheet))
     )
 
-  private def findOrCreateFolder(parentId: String, folderName: String): F[String] =
+  private def findOrCreateFolder(parentId: String, folderName: String): String =
     driveClient
       .listFilesInFolder(parentId)
-      .map(searchResults => searchResults.find(_.name == folderName))
-      .flatMap {
-        case None                            => driveClient.createFolderTo(parentId, folderName)
-        case Some(GoogleSearchResult(id, _)) => F.pure(id)
-      }
+      .find(_.name == folderName)
+      .fold(driveClient.createFolderTo(parentId, folderName))(_.id)
 
 }

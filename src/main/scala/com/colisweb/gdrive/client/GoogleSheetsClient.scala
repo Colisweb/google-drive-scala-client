@@ -1,6 +1,5 @@
 package com.colisweb.gdrive.client
 
-import cats.effect.IO
 import com.google.api.services.sheets.v4.Sheets
 import com.google.api.services.sheets.v4.model.{GridData, RowData, UpdateValuesResponse, ValueRange}
 
@@ -10,21 +9,21 @@ final case class GoogleSheetsClient(sheetsService: Sheets, sheetId: String) {
   def maybeReadSpreadsheet[T](
       ranges: List[String],
       parseFields: List[List[String]] => List[T]
-  ): IO[List[T]] = {
-    IO {
-      sheetsService
-        .spreadsheets()
-        .get(sheetId)
-        .setRanges(ranges.asJava)
-        .setIncludeGridData(true)
-        .execute()
-    }.map { data =>
-      val sheet     = data.getSheets.get(0)
-      val sheetData = sheet.getData.asScala.toList
+  ): List[T] = {
+    val sheetData = sheetsService
+      .spreadsheets()
+      .get(sheetId)
+      .setRanges(ranges.asJava)
+      .setIncludeGridData(true)
+      .execute()
+      .getSheets
+      .get(0)
+      .getData
+      .asScala
+      .toList
 
-      // Removing headers' row
-      parseFields(readGridDataAsStringAndTransposeToColumnFirst(sheetData).tail)
-    }
+    // Removing headers' row
+    parseFields(readGridDataAsStringAndTransposeToColumnFirst(sheetData).tail)
   }
 
   def readRows(range: String): Seq[RowData] = readRows(List(range))
@@ -54,18 +53,18 @@ final case class GoogleSheetsClient(sheetsService: Sheets, sheetId: String) {
       .execute()
   }
 
-  def retrieveSheetsIds(): IO[Map[String, Int]] =
-    IO {
-      sheetsService
-        .spreadsheets()
-        .get(sheetId)
-        .execute()
-    }.map { spreadsheet =>
-      spreadsheet.getSheets.asScala.map { sheet =>
+  def retrieveSheetsIds(): Map[String, Int] =
+    sheetsService
+      .spreadsheets()
+      .get(sheetId)
+      .execute
+      .getSheets
+      .asScala
+      .map { sheet =>
         val properties = sheet.getProperties
         properties.getTitle -> properties.getSheetId.toInt
-      }.toMap
-    }
+      }
+      .toMap
 
   private def readGridDataAsStringAndTransposeToColumnFirst(sheetData: List[GridData]): List[List[String]] = {
     def rowIsNotEmpty: RowData => Boolean = _.getValues.asScala.forall(_.getEffectiveValue != null)
