@@ -1,22 +1,17 @@
 package com.colisweb.gdrive.client
 
-
 import java.io.File
 
 import cats.effect.Sync
 import cats.implicits._
-import com.google.api.client.auth.oauth2.Credential
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.http.FileContent
-import com.google.api.client.json.jackson2.JacksonFactory
+import com.google.api.services.drive.Drive
 import com.google.api.services.drive.model.{FileList, File => DriveFile}
-import com.google.api.services.drive.{Drive, DriveScopes}
 import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConverters._
 
-class GoogleDriveApiClient[F[_]](driveService: Drive)(implicit F: Sync[F]) {
+case class GoogleDriveApiClient[F[_]](driveService: Drive)(implicit F: Sync[F]) {
 
   private val log = LoggerFactory.getLogger(classOf[GoogleDriveApiClient[F]])
 
@@ -132,25 +127,4 @@ class GoogleDriveApiClient[F[_]](driveService: Drive)(implicit F: Sync[F]) {
   }
 }
 
-object GoogleDriveApiClient {
-
-  final case class GoogleSearchResult(id: String, name: String)
-
-  private val credentialsPath    = "google-credentials.json"
-  private val applicationName    = "RoutingAnalysis"
-  private val scopes             = List(DriveScopes.DRIVE)
-  private lazy val jsonFactory   = JacksonFactory.getDefaultInstance
-  private lazy val httpTransport = GoogleNetHttpTransport.newTrustedTransport()
-
-  // FIXME: update deprecated login flow
-  private lazy val credentials: Credential =
-    GoogleCredential
-      .fromStream(getClass.getClassLoader.getResourceAsStream(credentialsPath))
-      .createScoped(scopes.asJavaCollection)
-
-  private lazy val driveService: Drive = new Drive.Builder(httpTransport, jsonFactory, credentials)
-    .setApplicationName(applicationName)
-    .build()
-
-  def apply[F[_]: Sync]: GoogleDriveApiClient[F] = new GoogleDriveApiClient(driveService)
-}
+final case class GoogleSearchResult(id: String, name: String)
