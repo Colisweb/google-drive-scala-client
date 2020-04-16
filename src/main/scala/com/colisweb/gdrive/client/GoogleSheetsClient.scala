@@ -6,36 +6,28 @@ import com.google.api.services.sheets.v4.model.{GridData, RowData, UpdateValuesR
 
 import scala.collection.JavaConverters._
 
-final case class GoogleSheetsClient(sheetsService: Sheets) {
+final case class GoogleSheetsClient(sheetsService: Sheets, sheetId: String) {
   def maybeReadSpreadsheet[T](
-      idOrError: Either[GoogleError, String],
       ranges: List[String],
       parseFields: List[List[String]] => List[T]
   ): IO[List[T]] = {
-    def readSpreadsheet(id: String): IO[List[T]] = {
-      IO {
-        sheetsService
-          .spreadsheets()
-          .get(id)
-          .setRanges(ranges.asJava)
-          .setIncludeGridData(true)
-          .execute()
-      }.map { data =>
-        val sheet     = data.getSheets.get(0)
-        val sheetData = sheet.getData.asScala.toList
+    IO {
+      sheetsService
+        .spreadsheets()
+        .get(sheetId)
+        .setRanges(ranges.asJava)
+        .setIncludeGridData(true)
+        .execute()
+    }.map { data =>
+      val sheet     = data.getSheets.get(0)
+      val sheetData = sheet.getData.asScala.toList
 
-        // Removing headers' row
-        parseFields(readGridDataAsStringAndTransposeToColumnFirst(sheetData).tail)
-      }
-    }
-
-    idOrError match {
-      case Left(_)   => IO(Nil)
-      case Right(id) => readSpreadsheet(id)
+      // Removing headers' row
+      parseFields(readGridDataAsStringAndTransposeToColumnFirst(sheetData).tail)
     }
   }
 
-  def readRows(range: String, sheetId: String): Seq[RowData] =
+  def readRows(range: String): Seq[RowData] =
     sheetsService
       .spreadsheets()
       .get(sheetId)
@@ -49,7 +41,7 @@ final case class GoogleSheetsClient(sheetsService: Sheets) {
       .getRowData
       .asScala
 
-  def writeRange(sheetId: String, range: String, content: Seq[Seq[AnyRef]]): UpdateValuesResponse = {
+  def writeRange(range: String, content: Seq[Seq[AnyRef]]): UpdateValuesResponse = {
     val values = new ValueRange
     values.setValues(content.map(_.asJava).asJava)
     sheetsService
@@ -60,11 +52,11 @@ final case class GoogleSheetsClient(sheetsService: Sheets) {
       .execute()
   }
 
-  def retrieveSheetsIds(spreadsheetId: String): IO[Map[String, Int]] =
+  def retrieveSheetsIds(): IO[Map[String, Int]] =
     IO {
       sheetsService
         .spreadsheets()
-        .get(spreadsheetId)
+        .get(sheetId)
         .execute()
     }.map { spreadsheet =>
       spreadsheet.getSheets.asScala.map { sheet =>

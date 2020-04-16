@@ -1,13 +1,21 @@
 package com.colisweb.gdrive.client
 
+import cats.effect.Sync
 import com.google.api.client.auth.oauth2.Credential
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.sheets.v4.{Sheets, SheetsScopes}
+
 import scala.collection.JavaConverters._
 
+/**
+  * Authenticates to Google API.
+  *
+  * @param credentialsPath path to a JSON file in resources
+  * @param applicationName registered name
+  */
 case class GoogleClient(credentialsPath: String, applicationName: String) {
 
   private lazy val jsonFactory   = JacksonFactory.getDefaultInstance
@@ -20,12 +28,17 @@ case class GoogleClient(credentialsPath: String, applicationName: String) {
       .fromStream(getClass.getClassLoader.getResourceAsStream(credentialsPath))
       .createScoped(scopes.asJavaCollection)
 
-  lazy val driveService: Drive = new Drive.Builder(httpTransport, jsonFactory, credentials)
-    .setApplicationName(applicationName)
-    .build()
+  def sheetsClient(sheetId: String): GoogleSheetsClient = {
+    val sheets = new Sheets.Builder(httpTransport, jsonFactory, credentials)
+      .setApplicationName(applicationName)
+      .build()
+    GoogleSheetsClient(sheets, sheetId)
+  }
 
-  lazy val sheetsService: Sheets = new Sheets.Builder(httpTransport, jsonFactory, credentials)
-    .setApplicationName(applicationName)
-    .build()
-
+  def driveClient[F[_]](implicit F: Sync[F]): GoogleDriveApiClient[F] = {
+    val drive = new Drive.Builder(httpTransport, jsonFactory, credentials)
+      .setApplicationName(applicationName)
+      .build()
+    GoogleDriveApiClient(drive)
+  }
 }
