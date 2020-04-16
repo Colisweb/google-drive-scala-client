@@ -7,12 +7,12 @@ object Demo extends App {
 
   val client = GoogleClient("google-credentials.json", "RoutingAnalysis").sheetsClient(sheetId)
   val rows = client
-    .readRows("A1:C3")
+    .readRows(List("A1:C2", "A2:D3"))
     .map(_.getValues.asScala)
     .map(_.map(_.getFormattedValue))
 
   rows.foreach(println)
 
-  client.writeRange("A1:C3", rows.transpose)
+  client.writeRange("G1:H4", rows.transpose)
 
 }

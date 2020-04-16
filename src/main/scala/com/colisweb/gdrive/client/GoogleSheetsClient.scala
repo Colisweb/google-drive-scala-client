@@ -27,11 +27,13 @@ final case class GoogleSheetsClient(sheetsService: Sheets, sheetId: String) {
     }
   }
 
-  def readRows(range: String): Seq[RowData] =
+  def readRows(range: String): Seq[RowData] = readRows(List(range))
+
+  def readRows(ranges: List[String]): Seq[RowData] =
     sheetsService
       .spreadsheets()
       .get(sheetId)
-      .setRanges(List(range).asJava)
+      .setRanges(ranges.asJava)
       .setIncludeGridData(true)
       .execute()
       .getSheets
