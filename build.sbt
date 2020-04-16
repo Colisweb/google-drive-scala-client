@@ -10,7 +10,7 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 //// Main projects
 
 lazy val root = Project(id = "google-drive-scala-client", base = file("."))
-  .settings(libraryDependencies ++= (GoogleDrive.all ++ Cats.all))
+  .settings(libraryDependencies ++= (GoogleDrive.all ++ Log4Cats.all ++ Cats.all))
 
 ThisBuild / licenses := Seq("MIT" -> url("http://opensource.org/licenses/MIT"))
 ThisBuild / scmInfo := Some(

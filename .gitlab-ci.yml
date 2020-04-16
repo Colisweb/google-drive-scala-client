@@ -5,9 +5,11 @@ test google-drive-scala-client:
   extends: .sbt-test
   tags: []
 
-unused-dependencies:
-  extends: .sbt-unused-dependencies
-  tags: []
+#unused-dependencies:
+#  extends: .sbt-unused-dependencies
+#  tags: []
+
+#TODO: uncomment when log4cats is used
 
 version:
   extends: .version

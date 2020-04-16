@@ -9,6 +9,13 @@ object GoogleDrive {
   final val all = Seq(client, sheets, oauth, drive)
 }
 
+object Log4Cats {
+  final lazy val core = "io.chrisdavenport" %% "log4cats-core" % "1.0.1"
+  final lazy val slf4j = "io.chrisdavenport" %% "log4cats-slf4j" % "1.0.1"
+
+  final lazy val all = Seq(core, slf4j)
+}
+
 object Cats {
   val cats = "org.typelevel" %% "cats-core" % "2.1.1"
   val catsEffect = "org.typelevel" %% "cats-effect" % "2.1.1"
