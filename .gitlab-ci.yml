@@ -1,0 +1,18 @@
+include:
+  - 'https://gitlab.com/colisweb-open-source/ci-common/raw/v9.0.0/templates/scala.yml'
+
+test google-drive-scala-client:
+  extends: .sbt-test
+  tags: []
+
+unused-dependencies:
+  extends: .sbt-unused-dependencies
+  tags: []
+
+version:
+  extends: .version
+  tags: []
+
+publish on bintray:
+  extends: .bintray-publish
+  tags: []
