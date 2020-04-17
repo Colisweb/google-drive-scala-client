@@ -4,6 +4,8 @@ include:
 test google-drive-scala-client:
   extends: .sbt-test
   tags: []
+  before_script:
+    - gpg -q --decrypt src/test/resources/google-credentials.json.secret > src/test/resources/google-credentials.json
 
 unused-dependencies:
   extends: .sbt-unused-dependencies
