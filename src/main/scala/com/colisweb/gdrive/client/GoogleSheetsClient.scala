@@ -1,7 +1,16 @@
 package com.colisweb.gdrive.client
 
 import com.google.api.services.sheets.v4.Sheets
-import com.google.api.services.sheets.v4.model.{GridData, RowData, UpdateValuesResponse, ValueRange}
+import com.google.api.services.sheets.v4.model.{
+  BatchUpdateSpreadsheetRequest,
+  DeleteSheetRequest,
+  GridData,
+  Request,
+  RowData,
+  Spreadsheet,
+  UpdateValuesResponse,
+  ValueRange
+}
 
 import scala.collection.JavaConverters._
 
@@ -27,6 +36,9 @@ final case class GoogleSheetsClient(sheetsService: Sheets, sheetId: String) {
   }
 
   def readRows(range: String): Seq[RowData] = readRows(List(range))
+
+  def createSheet(): String =
+    sheetsService.spreadsheets().create(new Spreadsheet).execute().getSpreadsheetId
 
   def readRows(ranges: List[String]): Seq[RowData] =
     sheetsService

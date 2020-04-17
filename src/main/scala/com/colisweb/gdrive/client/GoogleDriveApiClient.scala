@@ -2,9 +2,10 @@ package com.colisweb.gdrive.client
 
 import java.io.File
 
+import com.colisweb.gdrive.client.GoogleDriveRole.GoogleDriveRole
 import com.google.api.client.http.FileContent
 import com.google.api.services.drive.Drive
-import com.google.api.services.drive.model.{File => DriveFile}
+import com.google.api.services.drive.model.{Permission, File => DriveFile}
 
 import scala.collection.JavaConverters._
 
@@ -27,6 +28,9 @@ case class GoogleDriveApiClient(driveService: Drive) {
     folderId
   }
 
+  def delete(fileId: String): Unit =
+    driveService.files().delete(fileId).execute()
+
   // The files must be shared with the service account for it to search them.
   def listFilesInFolder(folderId: String): List[GoogleSearchResult] = {
     val query = s"'$folderId' in parents"
@@ -48,6 +52,12 @@ case class GoogleDriveApiClient(driveService: Drive) {
       }
 
   }
+
+  def share(fileId: String, email: String, role: GoogleDriveRole): Permission =
+    driveService
+      .permissions()
+      .create(fileId, (new Permission).setEmailAddress(email).setType("user").setRole(role.toString))
+      .execute()
 
   private def upload(
       driveFileName: String,
@@ -109,3 +119,12 @@ case class GoogleDriveApiClient(driveService: Drive) {
 }
 
 final case class GoogleSearchResult(id: String, name: String)
+
+object GoogleDriveRole extends Enumeration {
+  type GoogleDriveRole = Value
+  val owner         = Value("owner")
+  val organizer     = Value("organizer")
+  val fileOrganizer = Value("fileOrganizer")
+  val writer        = Value("writer")
+  val commenter     = Value("commenter")
+}
