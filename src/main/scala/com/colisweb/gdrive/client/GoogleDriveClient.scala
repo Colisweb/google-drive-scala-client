@@ -93,7 +93,7 @@ case class GoogleDriveApiClient(driveService: Drive) {
       .getId
   }
 
-  private def move(targetId: String, parentId: String): Boolean = {
+  def move(targetId: String, parentId: String): Boolean = {
     val driveFile =
       driveService
         .files()
