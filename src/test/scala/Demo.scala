@@ -6,20 +6,20 @@ object Demo extends App {
   val sheetId = "1R_rshsVSQkfehwP-4R_Fb2f5Ilgwjeu-nzxvStSPRg8"
 
   val client = GoogleClient("google-credentials.json", "RoutingAnalysis")
-  val sheets = client.sheetsClient(sheetId)
+  val sheets = client.sheetsClient
   val drive  = client.driveClient
 
-  val id = sheets.createSheet()
-  println(id)
+  val sheet = sheets.createSheet()
+  println(sheet.sheetId)
 
-  val rows = sheets
+  val rows = sheet
     .readRows(List("A1:C2", "A2:D3"))
     .map(_.getValues.asScala)
     .map(_.map(_.getFormattedValue))
 
   rows.foreach(println)
 
-  client.sheetsClient(id).writeRange("G1:H4", rows.transpose)
+  sheet.writeRange("G1:H4", rows.transpose)
 
-  drive.share(id, "michel.daviot@colisweb.com", GoogleDriveRole.commenter)
+  drive.share(sheet.sheetId, "michel.daviot@colisweb.com", GoogleDriveRole.commenter)
 }
