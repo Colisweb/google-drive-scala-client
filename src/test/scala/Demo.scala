@@ -14,6 +14,7 @@ object Demo extends App {
 
   val rows = spreadSheet
     .readRows(List("A1:C2", "A2:D3"))
+    .flatten
     .map(_.getValues.asScala)
     .map(_.map(_.getFormattedValue))
 

@@ -41,9 +41,9 @@ final case class GoogleSheetsClient(sheetsService: Sheets) {
       parseFields(readGridDataAsStringAndTransposeToColumnFirst(sheetData).tail)
     }
 
-    def readRows(range: String): Seq[RowData] = readRows(List(range))
+    def readRows(range: String): Seq[RowData] = readRows(List(range)).flatten
 
-    def readRows(ranges: List[String]): Seq[RowData] =
+    def readRows(ranges: List[String]): Seq[Seq[RowData]] =
       sheetsService
         .spreadsheets()
         .get(id)
@@ -53,9 +53,8 @@ final case class GoogleSheetsClient(sheetsService: Sheets) {
         .getSheets
         .get(0)
         .getData
-        .get(0)
-        .getRowData
         .asScala
+        .map(_.getRowData.asScala)
 
     def writeRange(range: String, content: Seq[Seq[AnyRef]]): UpdateValuesResponse = {
       val values = new ValueRange
