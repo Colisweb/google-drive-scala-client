@@ -27,11 +27,11 @@ case class GoogleClient(credentialsPath: String, applicationName: String) {
       .fromStream(getClass.getClassLoader.getResourceAsStream(credentialsPath))
       .createScoped(scopes.asJavaCollection)
 
-  def sheetsClient(sheetId: String): GoogleSheetsClient = {
+  def sheetsClient: GoogleSheetsClient = {
     val sheets = new Sheets.Builder(httpTransport, jsonFactory, credentials)
       .setApplicationName(applicationName)
       .build()
-    GoogleSheetsClient(sheets, sheetId)
+    GoogleSheetsClient(sheets)
   }
 
   def driveClient: GoogleDriveApiClient = {

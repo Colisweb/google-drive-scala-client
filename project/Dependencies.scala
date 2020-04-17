@@ -9,3 +9,6 @@ object GoogleDrive {
   final val all = Seq(client, sheets, oauth, drive)
 }
 
+object TestDependencies {
+  val scalaTest = "org.scalatest" %% "scalatest" % "3.1.1" % Test
+}
