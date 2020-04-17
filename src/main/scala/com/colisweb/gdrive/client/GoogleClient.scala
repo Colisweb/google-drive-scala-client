@@ -1,6 +1,5 @@
 package com.colisweb.gdrive.client
 
-import cats.effect.Sync
 import com.google.api.client.auth.oauth2.Credential
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
@@ -35,7 +34,7 @@ case class GoogleClient(credentialsPath: String, applicationName: String) {
     GoogleSheetsClient(sheets, sheetId)
   }
 
-  def driveClient[F[_]](implicit F: Sync[F]): GoogleDriveApiClient[F] = {
+  def driveClient: GoogleDriveApiClient = {
     val drive = new Drive.Builder(httpTransport, jsonFactory, credentials)
       .setApplicationName(applicationName)
       .build()

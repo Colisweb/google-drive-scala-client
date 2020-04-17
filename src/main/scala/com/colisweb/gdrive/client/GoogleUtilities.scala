@@ -1,33 +1,10 @@
 package com.colisweb.gdrive.client
 
-import cats.effect.IO
-import com.google.api.services.sheets.v4.Sheets
 import com.google.api.services.sheets.v4.model._
-import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConverters._
 
 object GoogleUtilities {
-
-  private val log = LoggerFactory.getLogger(GoogleUtilities.getClass)
-
-  def sheetsBatchRequests(
-      sheetsService: Sheets
-  )(spreadsheetId: String, requests: List[Request]): IO[Unit] =
-    if (requests.nonEmpty) {
-      log.debug(s"Sending ${requests.size} batch requests.")
-
-      IO {
-        sheetsService
-          .spreadsheets()
-          .batchUpdate(spreadsheetId, new BatchUpdateSpreadsheetRequest().setRequests(requests.asJava))
-          .execute()
-
-        ()
-      }
-    } else {
-      IO.unit
-    }
 
   def asRowData(data: List[String], format: CellFormat): RowData =
     new RowData().setValues(
