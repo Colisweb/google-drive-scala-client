@@ -5,7 +5,7 @@ import com.google.api.services.sheets.v4.model._
 
 import scala.collection.JavaConverters._
 
-final case class GoogleSheetsClient(authenticator: GoogleAuthenticator) {
+final class GoogleSheetsClient(authenticator: GoogleAuthenticator) {
 
   private val service =
     new Sheets.Builder(

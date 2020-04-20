@@ -9,7 +9,7 @@ import com.google.api.services.drive.model.{Permission, File => DriveFile}
 
 import scala.collection.JavaConverters._
 
-case class GoogleDriveClient(authenticator: GoogleAuthenticator) {
+final class GoogleDriveClient(authenticator: GoogleAuthenticator) {
 
   private val service =
     new Drive.Builder(
