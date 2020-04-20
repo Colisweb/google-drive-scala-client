@@ -6,10 +6,9 @@ object Demo extends App {
   val sheetId = "1R_rshsVSQkfehwP-4R_Fb2f5Ilgwjeu-nzxvStSPRg8"
 
   val authenticator = GoogleAuthenticator("google-credentials.json", "RoutingAnalysis")
-  val sheets        = new GoogleSheetsClient(authenticator)
   val drive         = new GoogleDriveClient(authenticator)
+  val spreadSheet   = GoogleSpreadsheet.createWithSheets(authenticator, "spreadsheet_name", List("foo"))
 
-  val spreadSheet = sheets.createWithSheets("spreadsheet_name", List("foo"))
   println(spreadSheet.id)
 
   val rows = spreadSheet

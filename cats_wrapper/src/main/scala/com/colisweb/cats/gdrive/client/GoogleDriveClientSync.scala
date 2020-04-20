@@ -27,7 +27,7 @@ class GoogleDriveClientSync[F[_]](authenticator: GoogleAuthenticator)(implicit F
       client.createFolderTo(parentId, name)
     )
 
-  def delete(fileId: String): F[String] =
+  def delete(fileId: String): F[Unit] =
     F.delay(
       client.delete(fileId)
     )
