@@ -5,7 +5,7 @@ import java.io.File
 import cats.effect.Sync
 import com.colisweb.gdrive.client.{GoogleDriveClient, GoogleUploader}
 
-class GoogleUploaderCats[F[_]](driveClient: GoogleDriveClient)(implicit F: Sync[F]) {
+class GoogleUploaderSync[F[_]](driveClient: GoogleDriveClient)(implicit F: Sync[F]) {
 
   private val uploader = new GoogleUploader(driveClient)
 
