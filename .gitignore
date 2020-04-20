@@ -70,5 +70,5 @@ local.*
 .gitsecret/keys/random_seed
 !*.secret
 secrets-env.sh
-src/main/resources/google-credentials.json
-src/test/resources/google-credentials.json
+core/src/main/resources/google-credentials.json
+core/src/test/resources/google-credentials.json

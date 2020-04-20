@@ -9,7 +9,7 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 
 //// Main projects
 
-lazy val root = Project(id = "google-drive-scala-client", base = file("."))
+lazy val core = Project(id = "google-drive-scala-client", base = file("core"))
   .settings(
     libraryDependencies ++= GoogleDrive.all,
     libraryDependencies += TestDependencies.scalaTest,
