@@ -6,16 +6,28 @@ import com.google.api.services.sheets.v4.model._
 import scala.collection.JavaConverters._
 
 final case class GoogleSheetsClient(sheetsService: Sheets) {
-  def withId(sheetId: String): GoogleSheet = GoogleSheet(sheetId)
 
-  case class GoogleSheet(sheetId: String) {
+  def createWithSheets(spreadSheetTitle: String, titles: List[String]): GoogleSpreadsheet = {
+    val properties  = new SpreadsheetProperties().setTitle(spreadSheetTitle)
+    val sheets      = titles.map(title => (new Sheet).setProperties((new SheetProperties).setTitle(title)))
+    val spreadSheet = (new Spreadsheet).setProperties(properties).setSheets(sheets.asJava)
+    val id = sheetsService
+      .spreadsheets()
+      .create(spreadSheet)
+      .execute()
+      .getSpreadsheetId
+
+    GoogleSpreadsheet(id, spreadSheetTitle)
+  }
+
+  case class GoogleSpreadsheet(id: String, name: String) {
     def maybeReadSpreadsheet[T](
         ranges: List[String],
         parseFields: List[List[String]] => List[T]
     ): List[T] = {
       val sheetData = sheetsService
         .spreadsheets()
-        .get(sheetId)
+        .get(id)
         .setRanges(ranges.asJava)
         .setIncludeGridData(true)
         .execute()
@@ -29,21 +41,20 @@ final case class GoogleSheetsClient(sheetsService: Sheets) {
       parseFields(readGridDataAsStringAndTransposeToColumnFirst(sheetData).tail)
     }
 
-    def readRows(range: String): Seq[RowData] = readRows(List(range))
+    def readRows(range: String): Seq[RowData] = readRows(List(range)).flatten
 
-    def readRows(ranges: List[String]): Seq[RowData] =
+    def readRows(ranges: List[String]): Seq[Seq[RowData]] =
       sheetsService
         .spreadsheets()
-        .get(sheetId)
+        .get(id)
         .setRanges(ranges.asJava)
         .setIncludeGridData(true)
         .execute()
         .getSheets
         .get(0)
         .getData
-        .get(0)
-        .getRowData
         .asScala
+        .map(_.getRowData.asScala)
 
     def writeRange(range: String, content: Seq[Seq[AnyRef]]): UpdateValuesResponse = {
       val values = new ValueRange
@@ -51,7 +62,7 @@ final case class GoogleSheetsClient(sheetsService: Sheets) {
       sheetsService
         .spreadsheets()
         .values()
-        .update(sheetId, range, values)
+        .update(id, range, values)
         .setValueInputOption("RAW")
         .execute()
     }
@@ -59,7 +70,7 @@ final case class GoogleSheetsClient(sheetsService: Sheets) {
     def retrieveSheetsIds(): Map[String, Int] =
       sheetsService
         .spreadsheets()
-        .get(sheetId)
+        .get(id)
         .execute
         .getSheets
         .asScala
@@ -79,11 +90,6 @@ final case class GoogleSheetsClient(sheetsService: Sheets) {
         rowsWithoutEmptyCells.flatMap(_.getValues.asScala.toList.map(_.getFormattedValue))
       }.transpose
     }
-  }
-
-  def createSheet(): GoogleSheet = {
-    val id = sheetsService.spreadsheets().create(new Spreadsheet).execute().getSpreadsheetId
-    withId(id)
   }
 
 }

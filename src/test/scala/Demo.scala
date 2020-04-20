@@ -9,17 +9,18 @@ object Demo extends App {
   val sheets = client.sheetsClient
   val drive  = client.driveClient
 
-  val sheet = sheets.createSheet()
-  println(sheet.sheetId)
+  val spreadSheet = sheets.createWithSheets("spreadsheet_name", List("foo"))
+  println(spreadSheet.id)
 
-  val rows = sheet
+  val rows = spreadSheet
     .readRows(List("A1:C2", "A2:D3"))
+    .flatten
     .map(_.getValues.asScala)
     .map(_.map(_.getFormattedValue))
 
   rows.foreach(println)
 
-  sheet.writeRange("G1:H4", rows.transpose)
+  spreadSheet.writeRange("G1:H4", rows.transpose)
 
-  drive.share(sheet.sheetId, "michel.daviot@colisweb.com", GoogleDriveRole.commenter)
+  drive.share(spreadSheet.id, "michel.daviot@colisweb.com", GoogleDriveRole.commenter)
 }
