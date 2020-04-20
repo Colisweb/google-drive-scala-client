@@ -8,9 +8,13 @@ import scala.collection.JavaConverters._
 class GoogleSheetsClientTest extends AnyFlatSpec with Matchers {
 
   it should "write to and read from a google spreadsheet" in {
-    val client      = GoogleClient("google-credentials.json", "RoutingAnalysis")
+
+    val authenticator = GoogleAuthenticator("google-credentials.json", "RoutingAnalysis")
+    val sheets        = GoogleSheetsClient(authenticator)
+    val drive         = GoogleDriveClient(authenticator)
+
     val sheetNames  = List("foo", "toto")
-    val spreadSheet = client.sheetsClient.createWithSheets("spreadsheet_name", sheetNames)
+    val spreadSheet = sheets.createWithSheets("spreadsheet_name", sheetNames)
     val range1      = "toto!A1:C1"
     val range2      = "toto!A2:C2"
     val ranges      = List(range1, range2)
@@ -26,6 +30,6 @@ class GoogleSheetsClientTest extends AnyFlatSpec with Matchers {
 
     rowData shouldBe data
 
-    client.driveClient.delete(spreadSheet.id)
+    drive.delete(spreadSheet.id)
   }
 }

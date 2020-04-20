@@ -2,7 +2,7 @@ package com.colisweb.gdrive.client
 
 import java.io.File
 
-class GoogleUploader(driveClient: GoogleDriveApiClient) {
+class GoogleUploader(driveClient: GoogleDriveClient) {
 
   def uploadDirectoryTo(parentId: String, destinationPath: List[String], localFolder: File): String = {
     val files    = localFolder.listFiles.filter(_.isFile).toList

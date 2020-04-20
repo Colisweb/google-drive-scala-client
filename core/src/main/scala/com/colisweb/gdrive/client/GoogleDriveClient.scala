@@ -9,7 +9,15 @@ import com.google.api.services.drive.model.{Permission, File => DriveFile}
 
 import scala.collection.JavaConverters._
 
-case class GoogleDriveApiClient(driveService: Drive) {
+case class GoogleDriveClient(authenticator: GoogleAuthenticator) {
+
+  private val service =
+    new Drive.Builder(
+      authenticator.httpTransport,
+      authenticator.jsonFactory,
+      authenticator.credentials
+    ).setApplicationName(authenticator.applicationName)
+      .build()
 
   def uploadTo(
       driveFileName: String,
@@ -29,13 +37,13 @@ case class GoogleDriveApiClient(driveService: Drive) {
   }
 
   def delete(fileId: String): Unit =
-    driveService.files().delete(fileId).execute()
+    service.files().delete(fileId).execute()
 
   // The files must be shared with the service account for it to search them.
   def listFilesInFolder(folderId: String): List[GoogleSearchResult] = {
     val query = s"'$folderId' in parents"
 
-    driveService
+    service
       .files()
       .list()
       .setQ(query)
@@ -54,7 +62,7 @@ case class GoogleDriveApiClient(driveService: Drive) {
   }
 
   def share(fileId: String, email: String, role: GoogleDriveRole): Permission =
-    driveService
+    service
       .permissions()
       .create(fileId, (new Permission).setEmailAddress(email).setType("user").setRole(role.toString))
       .execute()
@@ -72,7 +80,7 @@ case class GoogleDriveApiClient(driveService: Drive) {
 
     val content = new FileContent(targetMimeType, fileToUpload)
 
-    driveService.files
+    service.files
       .create(driveFileMetadata, content)
       .setFields("id")
       .execute
@@ -86,7 +94,7 @@ case class GoogleDriveApiClient(driveService: Drive) {
         .setName(name)
         .setMimeType(GoogleMimeType.driveFolder)
 
-    driveService.files
+    service.files
       .create(folderMetadata)
       .setFields("id")
       .execute
@@ -95,7 +103,7 @@ case class GoogleDriveApiClient(driveService: Drive) {
 
   def move(targetId: String, parentId: String): Boolean = {
     val driveFile =
-      driveService
+      service
         .files()
         .get(targetId)
         .setFields("parents")
@@ -104,7 +112,7 @@ case class GoogleDriveApiClient(driveService: Drive) {
     val previousParents = driveFile.getParents.asScala.mkString(",")
 
     val updatedFile =
-      driveService
+      service
         .files()
         .update(targetId, null) // null means we don't update the content of the file
         .setRemoveParents(previousParents)

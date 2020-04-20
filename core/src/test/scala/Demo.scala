@@ -5,9 +5,9 @@ import scala.collection.JavaConverters._
 object Demo extends App {
   val sheetId = "1R_rshsVSQkfehwP-4R_Fb2f5Ilgwjeu-nzxvStSPRg8"
 
-  val client = GoogleClient("google-credentials.json", "RoutingAnalysis")
-  val sheets = client.sheetsClient
-  val drive  = client.driveClient
+  val authenticator = GoogleAuthenticator("google-credentials.json", "RoutingAnalysis")
+  val sheets        = GoogleSheetsClient(authenticator)
+  val drive         = GoogleDriveClient(authenticator)
 
   val spreadSheet = sheets.createWithSheets("spreadsheet_name", List("foo"))
   println(spreadSheet.id)

@@ -5,13 +5,21 @@ import com.google.api.services.sheets.v4.model._
 
 import scala.collection.JavaConverters._
 
-final case class GoogleSheetsClient(sheetsService: Sheets) {
+final case class GoogleSheetsClient(authenticator: GoogleAuthenticator) {
+
+  private val service =
+    new Sheets.Builder(
+      authenticator.httpTransport,
+      authenticator.jsonFactory,
+      authenticator.credentials
+    ).setApplicationName(authenticator.applicationName)
+      .build()
 
   def createWithSheets(spreadSheetTitle: String, titles: List[String]): GoogleSpreadsheet = {
     val properties  = new SpreadsheetProperties().setTitle(spreadSheetTitle)
     val sheets      = titles.map(title => (new Sheet).setProperties((new SheetProperties).setTitle(title)))
     val spreadSheet = (new Spreadsheet).setProperties(properties).setSheets(sheets.asJava)
-    val id = sheetsService
+    val id = service
       .spreadsheets()
       .create(spreadSheet)
       .execute()
@@ -25,7 +33,7 @@ final case class GoogleSheetsClient(sheetsService: Sheets) {
         ranges: List[String],
         parseFields: List[List[String]] => List[T]
     ): List[T] = {
-      val sheetData = sheetsService
+      val sheetData = service
         .spreadsheets()
         .get(id)
         .setRanges(ranges.asJava)
@@ -44,7 +52,7 @@ final case class GoogleSheetsClient(sheetsService: Sheets) {
     def readRows(range: String): Seq[RowData] = readRows(List(range)).flatten
 
     def readRows(ranges: List[String]): Seq[Seq[RowData]] =
-      sheetsService
+      service
         .spreadsheets()
         .get(id)
         .setRanges(ranges.asJava)
@@ -59,7 +67,7 @@ final case class GoogleSheetsClient(sheetsService: Sheets) {
     def writeRange(range: String, content: Seq[Seq[AnyRef]]): UpdateValuesResponse = {
       val values = new ValueRange
       values.setValues(content.map(_.asJava).asJava)
-      sheetsService
+      service
         .spreadsheets()
         .values()
         .update(id, range, values)
@@ -68,7 +76,7 @@ final case class GoogleSheetsClient(sheetsService: Sheets) {
     }
 
     def retrieveSheetsIds(): Map[String, Int] =
-      sheetsService
+      service
         .spreadsheets()
         .get(id)
         .execute
