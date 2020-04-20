@@ -10,8 +10,8 @@ class GoogleSheetsClientTest extends AnyFlatSpec with Matchers {
   it should "write to and read from a google spreadsheet" in {
 
     val authenticator = GoogleAuthenticator("google-credentials.json", "RoutingAnalysis")
-    val sheets        = GoogleSheetsClient(authenticator)
-    val drive         = GoogleDriveClient(authenticator)
+    val sheets        = new GoogleSheetsClient(authenticator)
+    val drive         = new GoogleDriveClient(authenticator)
 
     val sheetNames  = List("foo", "toto")
     val spreadSheet = sheets.createWithSheets("spreadsheet_name", sheetNames)
