@@ -34,7 +34,33 @@ class GoogleSheetsClientTest extends AnyFlatSpec with Matchers {
     drive.delete(spreadSheet.id)
   }
 
-  it should "test write in an invalid sheet name" in {
+  it should "test writing with a range containing only the starting cell" in {
+
+    val authenticator = GoogleAuthenticator("google-credentials.json", "RoutingAnalysis")
+    val drive         = new GoogleDriveClient(authenticator)
+
+    val sheetNames  = List("foo", "toto")
+    val spreadSheet = GoogleSpreadsheet.createWithSheets(authenticator, "spreadsheet_name", sheetNames)
+
+    val range1 = "toto!A1:C1"
+    val range2 = "toto!A2:C2"
+    val ranges = List(range1, range2)
+
+    val data = Seq.tabulate(2, 3)((r, c) => s"data $r $c")
+
+    spreadSheet.writeRange("toto!A1", data)
+
+    val rowData = spreadSheet
+      .readRows(ranges)
+      .flatten
+      .map(_.getValues.asScala.map(_.getFormattedValue))
+
+    rowData shouldBe data
+
+    drive.delete(spreadSheet.id)
+  }
+
+  it should "test writing in an invalid sheet name" in {
     val authenticator = GoogleAuthenticator("google-credentials.json", "RoutingAnalysis")
     val drive         = new GoogleDriveClient(authenticator)
 
@@ -48,7 +74,7 @@ class GoogleSheetsClientTest extends AnyFlatSpec with Matchers {
     drive.delete(spreadSheet.id)
   }
 
-  it should "test write with an inverted range" in {
+  it should "test writing with an inverted range" in {
     val authenticator = GoogleAuthenticator("google-credentials.json", "RoutingAnalysis")
     val drive         = new GoogleDriveClient(authenticator)
 
