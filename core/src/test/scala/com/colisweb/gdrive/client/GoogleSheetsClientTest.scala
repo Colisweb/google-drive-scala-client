@@ -43,7 +43,21 @@ class GoogleSheetsClientTest extends AnyFlatSpec with Matchers {
 
     val data = Seq.tabulate(2, 3)((r, c) => s"data $r $c")
 
-    a [GoogleJsonResponseException] should be thrownBy spreadSheet.writeRange("invalid_sheet_name!A1:C2", data)
+    a[GoogleJsonResponseException] should be thrownBy spreadSheet.writeRange("invalid_sheet_name!A1:C2", data)
+
+    drive.delete(spreadSheet.id)
+  }
+
+  it should "test write with an inverted range" in {
+    val authenticator = GoogleAuthenticator("google-credentials.json", "RoutingAnalysis")
+    val drive         = new GoogleDriveClient(authenticator)
+
+    val sheetNames  = List("foo", "toto")
+    val spreadSheet = GoogleSpreadsheet.createWithSheets(authenticator, "spreadsheet_name", sheetNames)
+
+    val data = Seq.tabulate(2, 3)((r, c) => s"data $r $c")
+
+    a[GoogleJsonResponseException] should be thrownBy spreadSheet.writeRange("toto!B1:A1", data)
 
     drive.delete(spreadSheet.id)
   }
