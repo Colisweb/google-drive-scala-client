@@ -22,10 +22,10 @@ final class GoogleDriveClient(authenticator: GoogleAuthenticator) {
   def uploadFileTo(
       folderId: String,
       file: File,
-      driveFileName: String,
+      driveFilename: String,
       filetype: GoogleMimeType
   ): String = {
-    val fileId = uploadFile(file, driveFileName, filetype)
+    val fileId = uploadFile(file, driveFilename, filetype)
     move(fileId, folderId)
     fileId
   }
@@ -69,13 +69,13 @@ final class GoogleDriveClient(authenticator: GoogleAuthenticator) {
 
   def uploadFile(
       file: File,
-      driveFileName: String,
+      driveFilename: String,
       filetype: GoogleMimeType
   ): String = {
     val filetypeName = GoogleMimeType.name(filetype)
     val driveFileMetadata =
       new DriveFile()
-        .setName(driveFileName)
+        .setName(driveFilename)
         .setMimeType(filetypeName)
 
     val content = new FileContent(filetypeName, file)

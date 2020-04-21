@@ -36,6 +36,16 @@ class GoogleDriveClientSync[F[_]](authenticator: GoogleAuthenticator)(implicit F
       client.listFilesInFolder(folderId)
     )
 
+  def uploadFile(file: File, driveFilename: String, filetype: GoogleMimeType): F[String] =
+    F.delay(
+      client.uploadFile(file, driveFilename, filetype)
+    )
+
+  def createFolder(name: String): F[String] =
+    F.delay(
+      client.createFolder(name)
+    )
+
   def move(targetId: String, parentId: String): F[Unit] =
     F.delay(
       client.move(targetId, parentId)
