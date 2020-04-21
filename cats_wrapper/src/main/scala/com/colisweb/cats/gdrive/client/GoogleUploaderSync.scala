@@ -6,9 +6,12 @@ import cats.effect.{Sync, Timer}
 import com.colisweb.gdrive.client.{GoogleDriveClient, GoogleUploader}
 import retry.{RetryDetails, RetryPolicy}
 
-class GoogleUploaderSync[F[_]](driveClient: GoogleDriveClient, retryPolicy: RetryPolicy[F], onError: (Throwable, RetryDetails) => F[Unit])(
-    implicit F: Sync[F],
-    timer: Timer[F]
+class GoogleUploaderSync[F[_]: Sync](
+    driveClient: GoogleDriveClient,
+    retryPolicy: RetryPolicy[F],
+    onError: (Throwable, RetryDetails) => F[Unit]
+)(
+    implicit timer: Timer[F]
 ) extends Retry[F](retryPolicy, onError) {
 
   private val uploader = new GoogleUploader(driveClient)

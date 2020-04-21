@@ -6,13 +6,13 @@ import retry.{RetryDetails, RetryPolicy}
 
 object GoogleSpreadsheetSync {
 
-  def createWithSheets[F[_]](
+  def createWithSheets[F[_]: Sync](
       authenticator: GoogleAuthenticator,
       spreadSheetTitle: String,
       titles: List[String],
       retryPolicy: RetryPolicy[F],
       onError: (Throwable, RetryDetails) => F[Unit]
-  )(implicit F: Sync[F], timer: Timer[F]): F[GoogleSpreadsheet] =
+  )(implicit timer: Timer[F]): F[GoogleSpreadsheet] =
     Retry.retry[F, GoogleSpreadsheet](
       policy = retryPolicy,
       onError = onError
