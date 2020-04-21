@@ -19,15 +19,15 @@ final class GoogleDriveClient(authenticator: GoogleAuthenticator) {
     ).setApplicationName(authenticator.applicationName)
       .build()
 
-  def uploadTo(
+  def uploadFileTo(
+      folderId: String,
+      file: File,
       driveFileName: String,
-      fileToUpload: File,
-      destinationFolderId: String,
-      targetMimeType: String,
-      outputMimeType: Option[String] = None
-  ): Unit = {
-    val fileId = upload(driveFileName, fileToUpload, targetMimeType, outputMimeType)
-    move(fileId, destinationFolderId)
+      filetype: GoogleMimeType
+  ): String = {
+    val fileId = uploadFile(file, driveFileName, filetype)
+    move(fileId, folderId)
+    fileId
   }
 
   def createFolderTo(parentId: String, name: String): String = {
@@ -67,18 +67,18 @@ final class GoogleDriveClient(authenticator: GoogleAuthenticator) {
       .create(fileId, (new Permission).setEmailAddress(email).setType("user").setRole(role.toString))
       .execute()
 
-  private def upload(
+  def uploadFile(
+      file: File,
       driveFileName: String,
-      fileToUpload: File,
-      targetMimeType: String,
-      outputMimeType: Option[String]
+      filetype: GoogleMimeType
   ): String = {
+    val filetypeName = GoogleMimeType.name(filetype)
     val driveFileMetadata =
       new DriveFile()
         .setName(driveFileName)
-        .setMimeType(outputMimeType.getOrElse(targetMimeType))
+        .setMimeType(filetypeName)
 
-    val content = new FileContent(targetMimeType, fileToUpload)
+    val content = new FileContent(filetypeName, file)
 
     service.files
       .create(driveFileMetadata, content)
@@ -88,7 +88,7 @@ final class GoogleDriveClient(authenticator: GoogleAuthenticator) {
 
   }
 
-  private def createFolder(name: String): String = {
+  def createFolder(name: String): String = {
     val folderMetadata =
       new DriveFile()
         .setName(name)

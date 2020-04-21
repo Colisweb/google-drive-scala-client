@@ -4,22 +4,21 @@ import java.io.File
 
 import cats.effect.Sync
 import com.colisweb.gdrive.client.GoogleDriveRole.GoogleDriveRole
-import com.colisweb.gdrive.client.{GoogleAuthenticator, GoogleDriveClient, GoogleSearchResult}
+import com.colisweb.gdrive.client.{GoogleAuthenticator, GoogleDriveClient, GoogleMimeType, GoogleSearchResult}
 import com.google.api.services.drive.model.Permission
 
 class GoogleDriveClientSync[F[_]](authenticator: GoogleAuthenticator)(implicit F: Sync[F]) {
 
   val client = new GoogleDriveClient(authenticator)
 
-  def uploadTo(
+  def uploadFileTo(
+      folderId: String,
+      file: File,
       driveFilename: String,
-      fileToUpload: File,
-      destinationFolderId: String,
-      targetMimeType: String,
-      outputMimeType: Option[String]
+      filetype: GoogleMimeType
   ): F[Unit] =
     F.delay(
-      client.uploadTo(driveFilename, fileToUpload, destinationFolderId, targetMimeType, outputMimeType)
+      client.uploadFileTo(folderId, file, driveFilename, filetype)
     )
 
   def createFolderTo(parentId: String, name: String): F[String] =
