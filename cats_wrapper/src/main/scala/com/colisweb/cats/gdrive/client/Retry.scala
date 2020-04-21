@@ -5,7 +5,7 @@ import retry.{RetryDetails, RetryPolicy, retryingOnAllErrors}
 
 class Retry[F[_]](policy: RetryPolicy[F])(implicit F: Sync[F], timer: Timer[F]) {
 
-  def retry[A](action: => A): F[A] = Retry.retry(policy)(action)
+  val retry = Retry.retry(policy)
 }
 
 object Retry {
