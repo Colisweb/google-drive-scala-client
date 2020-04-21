@@ -13,13 +13,14 @@ class GoogleDriveClientTest extends AnyFlatSpec with Matchers {
     val drive         = new GoogleDriveClient(authenticator)
 
     val file = new File("/tmp/file")
-    val pw = new PrintWriter(file)
+    val pw   = new PrintWriter(file)
     pw.write("title; date")
+    pw.close()
 
     val folderId = drive.createFolder("folder_name")
     val fileId   = drive.uploadFileTo(folderId, file, "filename", CsvFileType)
 
-    pw.close()
+    file.delete()
     drive.delete(fileId)
     drive.delete(folderId)
   }
