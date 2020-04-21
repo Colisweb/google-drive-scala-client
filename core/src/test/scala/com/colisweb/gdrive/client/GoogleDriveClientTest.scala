@@ -7,7 +7,7 @@ import org.scalatest.matchers.should.Matchers
 
 class GoogleDriveClientTest extends AnyFlatSpec with Matchers {
 
-  it should "upload and delete file in a folder to drive" in {
+  it should "test listing files after upload a file in a new folder" in {
 
     val authenticator = GoogleAuthenticator("google-credentials.json", "RoutingAnalysis")
     val drive         = new GoogleDriveClient(authenticator)
@@ -19,6 +19,10 @@ class GoogleDriveClientTest extends AnyFlatSpec with Matchers {
 
     val folderId = drive.createFolder("folder_name")
     val fileId   = drive.uploadFileTo(folderId, file, "filename", CsvFileType)
+
+    val l = drive.listFilesInFolder(folderId)
+
+    l.head should be(GoogleSearchResult(fileId, "filename"))
 
     file.delete()
     drive.delete(fileId)
