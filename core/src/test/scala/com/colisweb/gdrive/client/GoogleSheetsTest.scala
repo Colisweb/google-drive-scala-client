@@ -6,7 +6,7 @@ import org.scalatest.matchers.should.Matchers
 
 import scala.collection.JavaConverters._
 
-class GoogleSheetsClientTest extends AnyFlatSpec with Matchers {
+class GoogleSheetsTest extends AnyFlatSpec with Matchers {
 
   it should "test write to and read from a google spreadsheet" in {
 
