@@ -8,10 +8,14 @@ import com.colisweb.gdrive.client.{GoogleAuthenticator, GoogleDriveClient, Googl
 import com.google.api.services.drive.model.Permission
 import retry._
 
-class GoogleDriveClientSync[F[_]](authenticator: GoogleAuthenticator, retryPolicy: RetryPolicy[F])(
+class GoogleDriveClientSync[F[_]](
+    authenticator: GoogleAuthenticator,
+    retryPolicy: RetryPolicy[F],
+    onError: (Throwable, RetryDetails) => F[Unit]
+)(
     implicit F: Sync[F],
     timer: Timer[F]
-) extends Retry[F](retryPolicy) {
+) extends Retry[F](retryPolicy, onError) {
 
   val client = new GoogleDriveClient(authenticator)
 
