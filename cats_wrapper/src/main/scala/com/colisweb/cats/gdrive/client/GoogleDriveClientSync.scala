@@ -2,12 +2,16 @@ package com.colisweb.cats.gdrive.client
 
 import java.io.File
 
-import cats.effect.Sync
+import cats.effect.{Sync, Timer}
 import com.colisweb.gdrive.client.GoogleDriveRole.GoogleDriveRole
 import com.colisweb.gdrive.client.{GoogleAuthenticator, GoogleDriveClient, GoogleMimeType, GoogleSearchResult}
 import com.google.api.services.drive.model.Permission
+import retry._
 
-class GoogleDriveClientSync[F[_]](authenticator: GoogleAuthenticator)(implicit F: Sync[F]) {
+class GoogleDriveClientSync[F[_]](authenticator: GoogleAuthenticator, retryPolicy: RetryPolicy[F])(
+    implicit F: Sync[F],
+    timer: Timer[F]
+) extends Retry[F](retryPolicy) {
 
   val client = new GoogleDriveClient(authenticator)
 
@@ -16,43 +20,43 @@ class GoogleDriveClientSync[F[_]](authenticator: GoogleAuthenticator)(implicit F
       file: File,
       driveFilename: String,
       filetype: GoogleMimeType
-  ): F[Unit] =
-    F.delay(
+  ): F[String] =
+    retry(
       client.uploadFileTo(folderId, file, driveFilename, filetype)
     )
 
   def createFolderTo(parentId: String, name: String): F[String] =
-    F.delay(
+    retry(
       client.createFolderTo(parentId, name)
     )
 
   def delete(fileId: String): F[Unit] =
-    F.delay(
+    retry(
       client.delete(fileId)
     )
 
   def listFilesInFolder(folderId: String): F[List[GoogleSearchResult]] =
-    F.delay(
+    retry(
       client.listFilesInFolder(folderId)
     )
 
   def uploadFile(file: File, driveFilename: String, filetype: GoogleMimeType): F[String] =
-    F.delay(
+    retry(
       client.uploadFile(file, driveFilename, filetype)
     )
 
   def createFolder(name: String): F[String] =
-    F.delay(
+    retry(
       client.createFolder(name)
     )
 
   def move(targetId: String, parentId: String): F[Unit] =
-    F.delay(
+    retry(
       client.move(targetId, parentId)
     )
 
   def share(fileId: String, email: String, role: GoogleDriveRole): F[Permission] =
-    F.delay(
+    retry(
       client.share(fileId, email, role)
     )
 }
