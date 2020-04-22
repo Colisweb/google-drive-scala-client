@@ -19,7 +19,7 @@ object Retry {
   )(action: => A)(implicit F: Sync[F], time: Timer[F]): F[A] =
     retryingOnAllErrors(
       policy = policy,
-      onError = onError[F]
+      onError = onError
     )(
       action = F.delay(action)
     )

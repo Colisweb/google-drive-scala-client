@@ -63,3 +63,19 @@ class GoogleDriveClientSync[F[_]: Sync](
       client.share(fileId, email, role)
     )
 }
+
+object GoogleDriveClientSync {
+
+  def apply[F[_]: Sync](
+      authenticator: GoogleAuthenticator,
+      retryPolicy: RetryPolicy[F],
+      onError: (Throwable, RetryDetails) => F[Unit]
+  )(implicit timer: Timer[F]): GoogleDriveClientSync[F] =
+    new GoogleDriveClientSync(authenticator, retryPolicy, onError)
+
+  def apply[F[_]: Sync](
+      authenticator: GoogleAuthenticator,
+      onError: (Throwable, RetryDetails) => F[Unit]
+  )(implicit timer: Timer[F]): GoogleDriveClientSync[F] =
+    new GoogleDriveClientSync(authenticator, RetryPolicies.limitRetries(0), onError)
+}
