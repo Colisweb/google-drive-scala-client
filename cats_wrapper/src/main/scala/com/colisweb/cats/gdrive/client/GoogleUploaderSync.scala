@@ -35,5 +35,5 @@ object GoogleUploaderSync {
   def apply[F[_]: Sync](
       driveClient: GoogleDriveClient
   )(implicit timer: Timer[F]): GoogleUploaderSync[F] =
-    new GoogleUploaderSync(driveClient, Retry.defaultPolicy, Retry.defaultOnError)
+    new GoogleUploaderSync(driveClient, Retry.defaultPolicy[F], Retry.defaultOnError[F])
 }

@@ -26,8 +26,8 @@ object GoogleSpreadsheetSync {
       titles: List[String]
   )(implicit timer: Timer[F]): F[GoogleSpreadsheet] =
     Retry.retry[F, GoogleSpreadsheet](
-      policy = Retry.defaultPolicy,
-      onError = Retry.defaultOnError
+      policy = Retry.defaultPolicy[F],
+      onError = Retry.defaultOnError[F]
     )(
       GoogleSpreadsheet.createWithSheets(authenticator, spreadSheetTitle, titles)
     )

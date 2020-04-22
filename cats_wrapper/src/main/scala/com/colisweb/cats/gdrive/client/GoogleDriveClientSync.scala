@@ -76,5 +76,5 @@ object GoogleDriveClientSync {
   def apply[F[_]: Sync](
       authenticator: GoogleAuthenticator
   )(implicit timer: Timer[F]): GoogleDriveClientSync[F] =
-    new GoogleDriveClientSync(authenticator, Retry.defaultPolicy, Retry.defaultOnError)
+    new GoogleDriveClientSync(authenticator, Retry.defaultPolicy[F], Retry.defaultOnError[F])
 }
