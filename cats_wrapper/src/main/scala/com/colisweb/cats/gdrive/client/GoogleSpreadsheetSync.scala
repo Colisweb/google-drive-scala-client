@@ -19,4 +19,16 @@ object GoogleSpreadsheetSync {
     )(
       GoogleSpreadsheet.createWithSheets(authenticator, spreadSheetTitle, titles)
     )
+
+  def createWithSheets[F[_]: Sync](
+      authenticator: GoogleAuthenticator,
+      spreadSheetTitle: String,
+      titles: List[String]
+  )(implicit timer: Timer[F]): F[GoogleSpreadsheet] =
+    Retry.retry[F, GoogleSpreadsheet](
+      policy = Retry.defaultPolicy,
+      onError = Retry.defaultOnError
+    )(
+      GoogleSpreadsheet.createWithSheets(authenticator, spreadSheetTitle, titles)
+    )
 }

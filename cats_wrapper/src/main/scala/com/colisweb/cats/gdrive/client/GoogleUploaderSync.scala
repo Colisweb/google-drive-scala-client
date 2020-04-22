@@ -22,3 +22,18 @@ class GoogleUploaderSync[F[_]: Sync](
     )
 
 }
+
+object GoogleUploaderSync {
+
+  def apply[F[_]: Sync](
+      driveClient: GoogleDriveClient,
+      retryPolicy: RetryPolicy[F],
+      onError: (Throwable, RetryDetails) => F[Unit]
+  )(implicit timer: Timer[F]): GoogleUploaderSync[F] =
+    new GoogleUploaderSync(driveClient, retryPolicy, onError)
+
+  def apply[F[_]: Sync](
+      driveClient: GoogleDriveClient
+  )(implicit timer: Timer[F]): GoogleUploaderSync[F] =
+    new GoogleUploaderSync(driveClient, Retry.defaultPolicy, Retry.defaultOnError)
+}
