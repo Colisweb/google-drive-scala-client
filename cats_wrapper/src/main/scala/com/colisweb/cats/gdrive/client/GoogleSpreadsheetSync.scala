@@ -3,7 +3,7 @@ package com.colisweb.cats.gdrive.client
 import cats.effect.{Sync, Timer}
 import cats.implicits._
 import com.colisweb.gdrive.client.{GoogleAuthenticator, GoogleSpreadsheet}
-import com.google.api.services.sheets.v4.model.{RowData, UpdateValuesResponse}
+import com.google.api.services.sheets.v4.model.{BatchUpdateValuesResponse, RowData, UpdateValuesResponse}
 import retry.{RetryDetails, RetryPolicy}
 
 class GoogleSpreadsheetSync[F[_]: Sync](
@@ -31,6 +31,11 @@ class GoogleSpreadsheetSync[F[_]: Sync](
   def readRows(ranges: List[String]): F[Seq[Seq[RowData]]] =
     retry(
       spreadsheet.readRows(ranges)
+    )
+
+  def writeRanges(sheets: List[(String, Seq[Seq[AnyRef]])]): F[BatchUpdateValuesResponse] =
+    retry(
+      spreadsheet.writeRanges(sheets)
     )
 
   def writeRange(range: String, content: Seq[Seq[AnyRef]]): F[UpdateValuesResponse] =

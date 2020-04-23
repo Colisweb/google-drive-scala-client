@@ -46,9 +46,9 @@ class GoogleSpreadsheet private (service: Sheets, spreadsheetId: String, spreads
       .asScala
       .map(_.getRowData.asScala)
 
-  def writeRanges(list: List[(String, Seq[Seq[AnyRef]])]): BatchUpdateValuesResponse = {
+  def writeRanges(sheets: List[(String, Seq[Seq[AnyRef]])]): BatchUpdateValuesResponse = {
 
-    val data = list.map {
+    val data = sheets.map {
       case (range, values) =>
         new ValueRange()
           .setRange(range)
