@@ -33,12 +33,12 @@ class GoogleSpreadsheetSync[F[_]: Sync](
       spreadsheet.readRows(ranges)
     )
 
-  def writeRanges(sheets: List[(String, Seq[Seq[AnyRef]])]): F[BatchUpdateValuesResponse] =
+  def writeRanges(sheets: List[(String, Seq[Seq[AnyRef]])]): F[Unit] =
     retry(
       spreadsheet.writeRanges(sheets)
     )
 
-  def writeRange(range: String, content: Seq[Seq[AnyRef]]): F[UpdateValuesResponse] =
+  def writeRange(range: String, content: Seq[Seq[AnyRef]]): F[Unit] =
     retry(
       spreadsheet.writeRange(range, content)
     )
