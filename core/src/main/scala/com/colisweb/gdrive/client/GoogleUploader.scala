@@ -11,7 +11,7 @@ class GoogleUploader(driveClient: GoogleDriveClient) {
     folderId
   }
 
-  private def uploadPathTo(parentId: String, path: List[String]): String =
+  def uploadPathTo(parentId: String, path: List[String]): String =
     path.fold(parentId)(findOrCreateFolder)
 
   private def uploadFilesTo(folderId: String, files: List[File]): Unit =
