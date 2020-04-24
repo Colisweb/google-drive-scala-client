@@ -55,7 +55,9 @@ class GoogleSpreadsheet private (service: Sheets, spreadsheetId: String, spreads
           .setValues(values.map(_.asJava).asJava)
     }
 
-    val body = new BatchUpdateValuesRequest().setData(data.asJava)
+    val body = new BatchUpdateValuesRequest()
+      .setValueInputOption("RAW")
+      .setData(data.asJava)
 
     service
       .spreadsheets()
