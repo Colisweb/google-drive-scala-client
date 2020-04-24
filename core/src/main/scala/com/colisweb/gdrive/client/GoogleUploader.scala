@@ -11,11 +11,11 @@ class GoogleUploader(driveClient: GoogleDriveClient) {
     folderId
   }
 
-  private def uploadPathTo(parentId: String, path: List[String]): String =
+  def uploadPathTo(parentId: String, path: List[String]): String =
     path.fold(parentId)(findOrCreateFolder)
 
   private def uploadFilesTo(folderId: String, files: List[File]): Unit =
-    files.foreach(file => driveClient.uploadFileTo(file.getName, file, folderId, CsvFileType))
+    files.foreach(file => driveClient.uploadFileTo(folderId, file, file.getName, GoogleSpreadsheetType))
 
   private def findOrCreateFolder(parentId: String, folderName: String): String =
     driveClient

@@ -16,7 +16,8 @@ lazy val core = Project(id = "google-drive-scala-client", base = file("core"))
 
 lazy val cats_wrapper = Project(id = "google-drive-scala-client-cats", base = file("cats_wrapper"))
   .settings(
-    libraryDependencies ++= Cats.all
+    libraryDependencies ++= Cats.all,
+    libraryDependencies += TestDependencies.scalaTest
   )
   .dependsOn(core)
 
