@@ -3,7 +3,7 @@ package com.colisweb.cats.gdrive.client
 import cats.effect.{Sync, Timer}
 import cats.implicits._
 import com.colisweb.gdrive.client.{GoogleAuthenticator, GoogleSpreadsheet}
-import com.google.api.services.sheets.v4.model.{BatchUpdateValuesResponse, RowData, UpdateValuesResponse}
+import com.google.api.services.sheets.v4.model.RowData
 import retry.{RetryDetails, RetryPolicy}
 
 class GoogleSpreadsheetSync[F[_]: Sync](
