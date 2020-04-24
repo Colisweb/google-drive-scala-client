@@ -12,9 +12,10 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
 
     val authenticator = GoogleAuthenticator("google-credentials.json", "RoutingAnalysis")
     val drive         = new GoogleDriveClient(authenticator)
+    val sheets        = new GoogleSheetClient(authenticator)
 
-    val sheetNames  = List("foo", "toto")
-    val spreadSheet = GoogleSpreadsheet.createWithSheets(authenticator, "spreadsheet_name", sheetNames)
+    val sheetNames    = List("foo", "toto")
+    val spreadsheetId = sheets.createSpreadsheet("spreadsheet_name", sheetNames)
 
     val range1 = "toto!A1:C1"
     val range2 = "toto!A2:C2"
@@ -22,25 +23,26 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
 
     val data = Seq.tabulate(2, 3)((r, c) => s"data $r $c")
 
-    spreadSheet.writeRange("toto!A1:C2", data)
+    sheets.writeRange(spreadsheetId, "toto!A1:C2", data)
 
-    val rowData = spreadSheet
-      .readRows(ranges)
+    val rowData = sheets
+      .readRows(spreadsheetId, ranges)
       .flatten
       .map(_.getValues.asScala.map(_.getFormattedValue))
 
     rowData shouldBe data
 
-    drive.delete(spreadSheet.id)
+    drive.delete(spreadsheetId)
   }
 
   it should "test writing with a range containing only the starting cell" in {
 
     val authenticator = GoogleAuthenticator("google-credentials.json", "RoutingAnalysis")
     val drive         = new GoogleDriveClient(authenticator)
+    val sheets        = new GoogleSheetClient(authenticator)
 
-    val sheetNames  = List("foo", "toto")
-    val spreadSheet = GoogleSpreadsheet.createWithSheets(authenticator, "spreadsheet_name", sheetNames)
+    val sheetNames    = List("foo", "toto")
+    val spreadsheetId = sheets.createSpreadsheet("spreadsheet_name", sheetNames)
 
     val range1 = "toto!A1:C1"
     val range2 = "toto!A2:C2"
@@ -48,43 +50,45 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
 
     val data = Seq.tabulate(2, 3)((r, c) => s"data $r $c")
 
-    spreadSheet.writeRange("toto!A1", data)
+    sheets.writeRange(spreadsheetId, "toto!A1", data)
 
-    val rowData = spreadSheet
-      .readRows(ranges)
+    val rowData = sheets
+      .readRows(spreadsheetId, ranges)
       .flatten
       .map(_.getValues.asScala.map(_.getFormattedValue))
 
     rowData shouldBe data
 
-    drive.delete(spreadSheet.id)
+    drive.delete(spreadsheetId)
   }
 
   it should "test writing in an invalid sheet name" in {
     val authenticator = GoogleAuthenticator("google-credentials.json", "RoutingAnalysis")
     val drive         = new GoogleDriveClient(authenticator)
+    val sheets        = new GoogleSheetClient(authenticator)
 
-    val sheetNames  = List("foo", "toto")
-    val spreadSheet = GoogleSpreadsheet.createWithSheets(authenticator, "spreadsheet_name", sheetNames)
+    val sheetNames    = List("foo", "toto")
+    val spreadsheetId = sheets.createSpreadsheet("spreadsheet_name", sheetNames)
 
     val data = Seq.tabulate(2, 3)((r, c) => s"data $r $c")
 
-    a[GoogleJsonResponseException] should be thrownBy spreadSheet.writeRange("invalid_sheet_name!A1:C2", data)
+    a[GoogleJsonResponseException] should be thrownBy sheets.writeRange(spreadsheetId, "invalid_sheet_name!A1:C2", data)
 
-    drive.delete(spreadSheet.id)
+    drive.delete(spreadsheetId)
   }
 
   it should "test writing with an inverted range" in {
     val authenticator = GoogleAuthenticator("google-credentials.json", "RoutingAnalysis")
     val drive         = new GoogleDriveClient(authenticator)
+    val sheets        = new GoogleSheetClient(authenticator)
 
-    val sheetNames  = List("foo", "toto")
-    val spreadSheet = GoogleSpreadsheet.createWithSheets(authenticator, "spreadsheet_name", sheetNames)
+    val sheetNames    = List("foo", "toto")
+    val spreadsheetId = sheets.createSpreadsheet("spreadsheet_name", sheetNames)
 
     val data = Seq.tabulate(2, 3)((r, c) => s"data $r $c")
 
-    a[GoogleJsonResponseException] should be thrownBy spreadSheet.writeRange("toto!B1:A1", data)
+    a[GoogleJsonResponseException] should be thrownBy sheets.writeRange(spreadsheetId, "toto!B1:A1", data)
 
-    drive.delete(spreadSheet.id)
+    drive.delete(spreadsheetId)
   }
 }

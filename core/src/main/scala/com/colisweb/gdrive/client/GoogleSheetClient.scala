@@ -5,13 +5,31 @@ import com.google.api.services.sheets.v4.model._
 
 import scala.collection.JavaConverters._
 
-class GoogleSpreadsheet private (service: Sheets, spreadsheetId: String, spreadsheetTitle: String) {
+class GoogleSheetClient(authenticator: GoogleAuthenticator) {
 
-  def title: String = spreadsheetTitle
+  val service: Sheets =
+    new Sheets.Builder(
+      authenticator.httpTransport,
+      authenticator.jsonFactory,
+      authenticator.credentials
+    ).setApplicationName(authenticator.applicationName)
+      .build()
 
-  def id: String = spreadsheetId
+  def createSpreadsheet(name: String, sheetsTitles: List[String]): String = {
+
+    val properties  = new SpreadsheetProperties().setTitle(name)
+    val sheets      = sheetsTitles.map(title => (new Sheet).setProperties((new SheetProperties).setTitle(title)))
+    val spreadSheet = (new Spreadsheet).setProperties(properties).setSheets(sheets.asJava)
+
+    service
+      .spreadsheets()
+      .create(spreadSheet)
+      .execute()
+      .getSpreadsheetId
+  }
 
   def maybeReadSpreadsheet[T](
+      id: String,
       ranges: List[String],
       parseFields: List[List[String]] => List[T]
   ): List[T] = {
@@ -31,9 +49,9 @@ class GoogleSpreadsheet private (service: Sheets, spreadsheetId: String, spreads
     parseFields(readGridDataAsStringAndTransposeToColumnFirst(sheetData).tail)
   }
 
-  def readRows(range: String): Seq[RowData] = readRows(List(range)).flatten
+  def readRows(id: String, range: String): Seq[RowData] = readRows(id, List(range)).flatten
 
-  def readRows(ranges: List[String]): Seq[Seq[RowData]] =
+  def readRows(id: String, ranges: List[String]): Seq[Seq[RowData]] =
     service
       .spreadsheets()
       .get(id)
@@ -46,9 +64,28 @@ class GoogleSpreadsheet private (service: Sheets, spreadsheetId: String, spreads
       .asScala
       .map(_.getRowData.asScala)
 
-  def writeRange(range: String, content: Seq[Seq[AnyRef]]): UpdateValuesResponse = {
-    val values = new ValueRange
-    values.setValues(content.map(_.asJava).asJava)
+  def writeRanges(id: String, sheets: List[(String, Seq[Seq[AnyRef]])]): BatchUpdateValuesResponse = {
+
+    val data = sheets.map {
+      case (range, values) =>
+        new ValueRange()
+          .setRange(range)
+          .setValues(values.map(_.asJava).asJava)
+    }
+
+    val body = new BatchUpdateValuesRequest()
+      .setValueInputOption("RAW")
+      .setData(data.asJava)
+
+    service
+      .spreadsheets()
+      .values()
+      .batchUpdate(id, body)
+      .execute()
+  }
+
+  def writeRange(id: String, range: String, content: Seq[Seq[AnyRef]]): UpdateValuesResponse = {
+    val values = new ValueRange().setValues(content.map(_.asJava).asJava)
     service
       .spreadsheets()
       .values()
@@ -57,7 +94,7 @@ class GoogleSpreadsheet private (service: Sheets, spreadsheetId: String, spreads
       .execute()
   }
 
-  def retrieveSheetsIds(): Map[String, Int] =
+  def retrieveSheetsIds(id: String): Map[String, Int] =
     service
       .spreadsheets()
       .get(id)
@@ -80,34 +117,4 @@ class GoogleSpreadsheet private (service: Sheets, spreadsheetId: String, spreads
       rowsWithoutEmptyCells.flatMap(_.getValues.asScala.toList.map(_.getFormattedValue))
     }.transpose
   }
-}
-
-object GoogleSpreadsheet {
-
-  def createWithSheets(
-      authenticator: GoogleAuthenticator,
-      spreadsheetTitle: String,
-      sheetsTitles: List[String]
-  ): GoogleSpreadsheet = {
-
-    val service: Sheets =
-      new Sheets.Builder(
-        authenticator.httpTransport,
-        authenticator.jsonFactory,
-        authenticator.credentials
-      ).setApplicationName(authenticator.applicationName)
-        .build()
-
-    val properties  = new SpreadsheetProperties().setTitle(spreadsheetTitle)
-    val sheets      = sheetsTitles.map(title => (new Sheet).setProperties((new SheetProperties).setTitle(title)))
-    val spreadSheet = (new Spreadsheet).setProperties(properties).setSheets(sheets.asJava)
-    val id = service
-      .spreadsheets()
-      .create(spreadSheet)
-      .execute()
-      .getSpreadsheetId
-
-    new GoogleSpreadsheet(service, id, spreadsheetTitle)
-  }
-
 }

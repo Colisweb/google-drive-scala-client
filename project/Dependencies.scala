@@ -10,9 +10,10 @@ object GoogleDrive {
 }
 
 object Cats {
-  final val catsEffect = "org.typelevel" %% "cats-effect" % "2.1.1"
+  final val catsEffect = "org.typelevel"    %% "cats-effect" % "2.1.1"
+  final val catsRetry  = "com.github.cb372" %% "cats-retry"  % "1.1.0"
 
-  final val all = Seq(catsEffect)
+  final val all = Seq(catsEffect, catsRetry)
 }
 
 object TestDependencies {
