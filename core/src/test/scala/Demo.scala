@@ -7,19 +7,21 @@ object Demo extends App {
 
   val authenticator = GoogleAuthenticator("google-credentials.json", "RoutingAnalysis")
   val drive         = new GoogleDriveClient(authenticator)
-  val spreadSheet   = GoogleSpreadsheet.createWithSheets(authenticator, "spreadsheet_name", List("foo"))
+  val sheets        = new GoogleSheetClient(authenticator)
 
-  println(spreadSheet.id)
+  val spreadsheetId = sheets.createSpreadsheet("spreadsheet_name", List("foo"))
 
-  val rows = spreadSheet
-    .readRows(List("A1:C2", "A2:D3"))
+  println(spreadsheetId)
+
+  val rows = sheets
+    .readRows(spreadsheetId, List("A1:C2", "A2:D3"))
     .flatten
     .map(_.getValues.asScala)
     .map(_.map(_.getFormattedValue))
 
   rows.foreach(println)
 
-  spreadSheet.writeRange("G1:H4", rows.transpose)
+  sheets.writeRange(spreadsheetId, "G1:H4", rows.transpose)
 
-  drive.share(spreadSheet.id, "michel.daviot@colisweb.com", GoogleDriveRole.commenter)
+  drive.share(spreadsheetId, "michel.daviot@colisweb.com", GoogleDriveRole.commenter)
 }
