@@ -2,6 +2,7 @@ package com.colisweb.gdrive.client
 
 import java.io.File
 
+//TODO : Remove ? Maybe overkill for this lib ?
 class GoogleUploader(driveClient: GoogleDriveClient) {
 
   def uploadDirectoryTo(parentId: String, destinationPath: List[String], localFolder: File): String = {
