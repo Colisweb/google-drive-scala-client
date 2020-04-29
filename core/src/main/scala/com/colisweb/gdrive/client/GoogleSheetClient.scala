@@ -64,13 +64,12 @@ class GoogleSheetClient(authenticator: GoogleAuthenticator) {
       .asScala
       .map(_.getRowData.asScala)
 
-  def writeRanges(id: String, sheets: List[(String, Seq[Seq[AnyRef]])]): BatchUpdateValuesResponse = {
+  def writeRanges(id: String, sheets: List[GoogleSheet]): BatchUpdateValuesResponse = {
 
-    val data = sheets.map {
-      case (range, values) =>
-        new ValueRange()
-          .setRange(range)
-          .setValues(values.map(_.asJava).asJava)
+    val data = sheets.map { sheet =>
+      new ValueRange()
+        .setRange(sheet.range)
+        .setValues(sheet.body.map(_.asJava).asJava)
     }
 
     val body = new BatchUpdateValuesRequest()

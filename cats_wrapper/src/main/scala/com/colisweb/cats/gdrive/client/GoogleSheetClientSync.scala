@@ -1,7 +1,7 @@
 package com.colisweb.cats.gdrive.client
 
 import cats.effect.{Sync, Timer}
-import com.colisweb.gdrive.client.{GoogleAuthenticator, GoogleSheetClient}
+import com.colisweb.gdrive.client.{GoogleAuthenticator, GoogleSheetClient, GoogleSheet}
 import com.google.api.services.sheets.v4.model.RowData
 import retry.{RetryDetails, RetryPolicy}
 
@@ -39,7 +39,7 @@ class GoogleSheetClientSync[F[_]: Sync](
       client.readRows(id, ranges)
     )
 
-  def writeRanges(id: String, sheets: List[(String, Seq[Seq[AnyRef]])]): F[Unit] =
+  def writeRanges(id: String, sheets: List[GoogleSheet]): F[Unit] =
     retry(
       client.writeRanges(id, sheets)
     )
