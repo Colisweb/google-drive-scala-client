@@ -83,12 +83,12 @@ class GoogleSheetClient(authenticator: GoogleAuthenticator) {
       .execute()
   }
 
-  def writeRange(id: String, range: String, content: Seq[Seq[AnyRef]]): UpdateValuesResponse = {
-    val values = new ValueRange().setValues(content.map(_.asJava).asJava)
+  def writeRange(id: String, sheet: GoogleSheet): UpdateValuesResponse = {
+    val data = new ValueRange().setValues(sheet.body.map(_.asJava).asJava)
     service
       .spreadsheets()
       .values()
-      .update(id, range, values)
+      .update(id, sheet.range, data)
       .setValueInputOption("RAW")
       .execute()
   }
