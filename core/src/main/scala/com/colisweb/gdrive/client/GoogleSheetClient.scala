@@ -64,7 +64,11 @@ class GoogleSheetClient(authenticator: GoogleAuthenticator) {
       .asScala
       .map(_.getRowData.asScala)
 
-  def writeRanges(id: String, sheets: List[GoogleSheet], inputOption: InputOption = InputOptionRaw()): BatchUpdateValuesResponse = {
+  def writeRanges(
+      id: String,
+      sheets: List[GoogleSheet],
+      inputOption: InputOption = InputOptionRaw
+  ): BatchUpdateValuesResponse = {
 
     val data = sheets.map { sheet =>
       new ValueRange()
@@ -83,7 +87,11 @@ class GoogleSheetClient(authenticator: GoogleAuthenticator) {
       .execute()
   }
 
-  def writeRange(id: String, sheet: GoogleSheet, inputOption: InputOption = InputOptionRaw()): UpdateValuesResponse = {
+  def writeRange(
+      id: String,
+      sheet: GoogleSheet,
+      inputOption: InputOption = InputOptionRaw
+  ): UpdateValuesResponse = {
     val data = new ValueRange().setValues(sheet.body.map(_.asJava).asJava)
     service
       .spreadsheets()

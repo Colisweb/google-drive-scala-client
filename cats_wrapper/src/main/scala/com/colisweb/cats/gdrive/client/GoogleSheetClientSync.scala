@@ -39,12 +39,12 @@ class GoogleSheetClientSync[F[_]: Sync](
       client.readRows(id, ranges)
     )
 
-  def writeRanges(id: String, sheets: List[GoogleSheet], inputOption: InputOption = InputOptionRaw()): F[Unit] =
+  def writeRanges(id: String, sheets: List[GoogleSheet], inputOption: InputOption = InputOptionRaw): F[Unit] =
     retry(
       client.writeRanges(id, sheets, inputOption)
     )
 
-  def writeRange(id: String, sheet: GoogleSheet, inputOption: InputOption = InputOptionRaw()): F[Unit] =
+  def writeRange(id: String, sheet: GoogleSheet, inputOption: InputOption = InputOptionRaw): F[Unit] =
     retry(
       client.writeRange(id, sheet, inputOption)
     )
@@ -53,4 +53,13 @@ class GoogleSheetClientSync[F[_]: Sync](
     retry(
       client.retrieveSheetsIds(id)
     )
+}
+
+object GoogleSheetClientSync {
+  def apply[F[_]: Sync](
+      authenticator: GoogleAuthenticator,
+      retryPolicy: RetryPolicy[F],
+      onError: (Throwable, RetryDetails) => F[Unit]
+  )(implicit timer: Timer[F]): GoogleSheetClientSync[F] =
+    new GoogleSheetClientSync(authenticator, Retry.defaultPolicy, Retry.defaultOnError[F])
 }

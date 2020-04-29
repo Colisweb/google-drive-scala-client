@@ -1,6 +1,13 @@
 package com.colisweb.gdrive.client
 
-sealed abstract case class InputOption(value: String)
-final case class InputOptionRaw() extends InputOption("RAW")
-final case class InputOptionUserEntered() extends InputOption("USER_ENTERED")
+sealed trait InputOption {
+  def value: String
+}
 
+case object InputOptionRaw extends InputOption {
+  override def value = "RAW"
+}
+
+case object InputOptionUserEntered extends InputOption {
+  override def value = "USER_ENTERED"
+}
