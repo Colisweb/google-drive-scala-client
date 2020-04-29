@@ -21,9 +21,9 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
     val range2 = "toto!A2:C2"
     val ranges = List(range1, range2)
 
-    val data = Seq.tabulate(2, 3)((r, c) => s"data $r $c")
+    val data = List.tabulate(2, 3)((r, c) => s"data $r $c")
 
-    sheets.writeRange(spreadsheetId, "toto!A1:C2", data)
+    sheets.writeRange(spreadsheetId, GoogleSheet("toto!A1:C2", data))
 
     val rowData = sheets
       .readRows(spreadsheetId, ranges)
@@ -48,9 +48,9 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
     val range2 = "toto!A2:C2"
     val ranges = List(range1, range2)
 
-    val data = Seq.tabulate(2, 3)((r, c) => s"data $r $c")
+    val data = List.tabulate(2, 3)((r, c) => s"data $r $c")
 
-    sheets.writeRange(spreadsheetId, "toto!A1", data)
+    sheets.writeRange(spreadsheetId, GoogleSheet("toto!A1", data))
 
     val rowData = sheets
       .readRows(spreadsheetId, ranges)
@@ -70,9 +70,12 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
     val sheetNames    = List("foo", "toto")
     val spreadsheetId = sheets.createSpreadsheet("spreadsheet_name", sheetNames)
 
-    val data = Seq.tabulate(2, 3)((r, c) => s"data $r $c")
+    val data = List.tabulate(2, 3)((r, c) => s"data $r $c")
 
-    a[GoogleJsonResponseException] should be thrownBy sheets.writeRange(spreadsheetId, "invalid_sheet_name!A1:C2", data)
+    a[GoogleJsonResponseException] should be thrownBy sheets.writeRange(
+      spreadsheetId,
+      GoogleSheet("invalid_sheet_name!A1:C2", data)
+    )
 
     drive.delete(spreadsheetId)
   }
@@ -85,9 +88,12 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
     val sheetNames    = List("foo", "toto")
     val spreadsheetId = sheets.createSpreadsheet("spreadsheet_name", sheetNames)
 
-    val data = Seq.tabulate(2, 3)((r, c) => s"data $r $c")
+    val data = List.tabulate(2, 3)((r, c) => s"data $r $c")
 
-    a[GoogleJsonResponseException] should be thrownBy sheets.writeRange(spreadsheetId, "toto!B1:A1", data)
+    a[GoogleJsonResponseException] should be thrownBy sheets.writeRange(
+      spreadsheetId,
+      GoogleSheet("toto!B1:A1", data)
+    )
 
     drive.delete(spreadsheetId)
   }

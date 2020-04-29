@@ -16,12 +16,13 @@ object Demo extends App {
   val rows = sheets
     .readRows(spreadsheetId, List("A1:C2", "A2:D3"))
     .flatten
-    .map(_.getValues.asScala)
+    .map(_.getValues.asScala.toList)
     .map(_.map(_.getFormattedValue))
+    .toList
 
   rows.foreach(println)
 
-  sheets.writeRange(spreadsheetId, "G1:H4", rows.transpose)
+  sheets.writeRange(spreadsheetId, GoogleSheet("G1:H4", rows.transpose))
 
   drive.share(spreadsheetId, "michel.daviot@colisweb.com", GoogleDriveRole.commenter)
 }
