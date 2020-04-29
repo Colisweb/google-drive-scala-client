@@ -23,7 +23,7 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
 
     val data = List.tabulate(2, 3)((r, c) => s"data $r $c")
 
-    sheets.writeRange(spreadsheetId, GoogleSheet("toto!A1:C2", data))
+    sheets.writeRange(spreadsheetId, SheetRangeContent("toto!A1:C2", data))
 
     val rowData = sheets
       .readRows(spreadsheetId, ranges)
@@ -50,7 +50,7 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
 
     val data = List.tabulate(2, 3)((r, c) => s"data $r $c")
 
-    sheets.writeRange(spreadsheetId, GoogleSheet("toto!A1", data))
+    sheets.writeRange(spreadsheetId, SheetRangeContent("toto!A1", data))
 
     val rowData = sheets
       .readRows(spreadsheetId, ranges)
@@ -74,7 +74,7 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
 
     a[GoogleJsonResponseException] should be thrownBy sheets.writeRange(
       spreadsheetId,
-      GoogleSheet("invalid_sheet_name!A1:C2", data)
+      SheetRangeContent("invalid_sheet_name!A1:C2", data)
     )
 
     drive.delete(spreadsheetId)
@@ -92,7 +92,7 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
 
     a[GoogleJsonResponseException] should be thrownBy sheets.writeRange(
       spreadsheetId,
-      GoogleSheet("toto!B1:A1", data)
+      SheetRangeContent("toto!B1:A1", data)
     )
 
     drive.delete(spreadsheetId)

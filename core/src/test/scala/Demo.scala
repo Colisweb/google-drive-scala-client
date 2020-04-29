@@ -22,7 +22,7 @@ object Demo extends App {
 
   rows.foreach(println)
 
-  sheets.writeRange(spreadsheetId, GoogleSheet("G1:H4", rows.transpose))
+  sheets.writeRange(spreadsheetId, SheetRangeContent("G1:H4", rows.transpose))
 
   drive.share(spreadsheetId, "michel.daviot@colisweb.com", GoogleDriveRole.commenter)
 }
