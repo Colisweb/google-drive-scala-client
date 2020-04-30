@@ -6,14 +6,20 @@ ThisBuild / scalafmtSbtCheck := true
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
-
 //// Main projects
 
-lazy val root = Project(id = "google-drive-scala-client", base = file("."))
+lazy val core = Project(id = "google-drive-scala-client", base = file("core"))
   .settings(
     libraryDependencies ++= GoogleDrive.all,
-    libraryDependencies += TestDependencies.scalaTest,
+    libraryDependencies += TestDependencies.scalaTest
   )
+
+lazy val cats_wrapper = Project(id = "google-drive-scala-client-cats", base = file("cats_wrapper"))
+  .settings(
+    libraryDependencies ++= Cats.all,
+    libraryDependencies += TestDependencies.scalaTest
+  )
+  .dependsOn(core)
 
 ThisBuild / licenses := Seq("MIT" -> url("http://opensource.org/licenses/MIT"))
 ThisBuild / scmInfo := Some(
