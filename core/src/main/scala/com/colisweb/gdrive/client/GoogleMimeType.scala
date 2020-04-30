@@ -1,9 +1,9 @@
 package com.colisweb.gdrive.client
 
 sealed trait GoogleMimeType
-case object GoogleSpreadsheet extends GoogleMimeType
-case object GoogleDriveFolder extends GoogleMimeType
-case object CsvFile           extends GoogleMimeType
+case object GoogleSpreadsheetType extends GoogleMimeType
+case object GoogleDriveFolderType extends GoogleMimeType
+case object CsvFileType           extends GoogleMimeType
 
 object GoogleMimeType {
   val driveFolder = "application/vnd.google-apps.folder"
@@ -12,8 +12,8 @@ object GoogleMimeType {
 
   def name(googleMimeType: GoogleMimeType): String =
     googleMimeType match {
-      case GoogleDriveFolder => driveFolder
-      case GoogleSpreadsheet => spreadsheet
-      case CsvFile           => csvFile
+      case GoogleDriveFolderType => driveFolder
+      case GoogleSpreadsheetType => spreadsheet
+      case CsvFileType           => csvFile
     }
 }

@@ -5,7 +5,7 @@ test google-drive-scala-client:
   extends: .sbt-test
   tags: []
   script:
-    - gpg -q --decrypt src/test/resources/google-credentials.json.secret > src/test/resources/google-credentials.json
+    - gpg -q --decrypt core/src/test/resources/google-credentials.json.secret > core/src/test/resources/google-credentials.json
     - sbt test
 
 unused-dependencies:
