@@ -10,7 +10,7 @@ class GoogleDriveClientTest extends AnyFlatSpec with Matchers {
 
   it should "test listing files after upload a file in a new folder" in {
 
-    val authenticator = GoogleAuthenticator("google-credentials.json", "RoutingAnalysis")
+    val authenticator = GoogleAuthenticator.fromResource("google-credentials.json", "RoutingAnalysis")
     val drive         = new GoogleDriveClient(authenticator)
 
     val file = new File("/tmp/file")
@@ -32,7 +32,7 @@ class GoogleDriveClientTest extends AnyFlatSpec with Matchers {
 
   it should "test uploading a folder in a non-existing parent" in {
 
-    val authenticator = GoogleAuthenticator("google-credentials.json", "RoutingAnalysis")
+    val authenticator = GoogleAuthenticator.fromResource("google-credentials.json", "RoutingAnalysis")
     val drive         = new GoogleDriveClient(authenticator)
 
     a[GoogleJsonResponseException] should be thrownBy drive.createFolderTo("non-existing-id", "folder_name")
