@@ -17,5 +17,5 @@ object Cats {
 }
 
 object TestDependencies {
-  val scalaTest = "org.scalatest" %% "scalatest" % "3.1.1" % Test
+  val scalaTest = "org.scalatest" %% "scalatest" % "3.1.2" % Test
 }
