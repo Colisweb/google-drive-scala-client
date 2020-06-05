@@ -1,7 +1,7 @@
 package com.colisweb.gdrive.client
 
 import com.google.api.services.sheets.v4.model.ValueRange
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 case class SheetRangeContent(range: String, body: List[List[AnyRef]]) {
 

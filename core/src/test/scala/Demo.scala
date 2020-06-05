@@ -1,6 +1,6 @@
 import com.colisweb.gdrive.client._
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object Demo extends App {
   val sheetId = "1R_rshsVSQkfehwP-4R_Fb2f5Ilgwjeu-nzxvStSPRg8"

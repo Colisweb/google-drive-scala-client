@@ -3,17 +3,19 @@ package com.colisweb.cats.gdrive.client
 import java.io.File
 
 import cats.effect.{Sync, Timer}
+import cats.implicits._
 import com.colisweb.gdrive.client.GoogleDriveRole.GoogleDriveRole
 import com.colisweb.gdrive.client.{GoogleAuthenticator, GoogleDriveClient, GoogleMimeType, GoogleSearchResult}
 import com.google.api.services.drive.model.Permission
 import retry._
 
-class GoogleDriveClientSync[F[_]: Sync](
+class GoogleDriveClientSync[F[_]](
     authenticator: GoogleAuthenticator,
     retryPolicy: RetryPolicy[F],
     onError: (Throwable, RetryDetails) => F[Unit]
-)(
-    implicit timer: Timer[F]
+)(implicit
+    timer: Timer[F],
+    S: Sync[F]
 ) extends Retry[F](retryPolicy, onError) {
 
   val client = new GoogleDriveClient(authenticator)
@@ -36,7 +38,7 @@ class GoogleDriveClientSync[F[_]: Sync](
   def delete(fileId: String): F[Unit] =
     retry(
       client.delete(fileId)
-    )
+    ) *> S.unit
 
   def listFilesInFolder(folderId: String): F[List[GoogleSearchResult]] =
     retry(
@@ -56,7 +58,7 @@ class GoogleDriveClientSync[F[_]: Sync](
   def move(targetId: String, parentId: String): F[Unit] =
     retry(
       client.move(targetId, parentId)
-    )
+    ) *> S.unit
 
   def share(fileId: String, email: String, role: GoogleDriveRole): F[Permission] =
     retry(

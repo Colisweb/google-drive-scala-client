@@ -6,8 +6,9 @@ import com.colisweb.gdrive.client.GoogleDriveRole.GoogleDriveRole
 import com.google.api.client.http.FileContent
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.model.{Permission, File => DriveFile}
+import com.google.auth.http.HttpCredentialsAdapter
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class GoogleDriveClient(authenticator: GoogleAuthenticator) {
 
@@ -15,7 +16,7 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
     new Drive.Builder(
       authenticator.httpTransport,
       authenticator.jsonFactory,
-      authenticator.credentials
+      new HttpCredentialsAdapter(authenticator.credentials)
     ).setApplicationName(authenticator.applicationName)
       .build()
 
@@ -36,8 +37,12 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
     folderId
   }
 
-  def delete(fileId: String): Unit =
-    service.files().delete(fileId).execute()
+  def delete(fileId: String) = {
+    service
+      .files()
+      .delete(fileId)
+      .execute()
+  }
 
   // The files must be shared with the service account for it to search them.
   def listFilesInFolder(folderId: String): List[GoogleSearchResult] = {

@@ -2,7 +2,7 @@ package com.colisweb.gdrive.client
 
 import com.google.api.services.sheets.v4.model._
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object GoogleUtilities {
 

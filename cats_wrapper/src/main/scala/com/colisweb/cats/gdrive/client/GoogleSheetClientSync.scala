@@ -1,6 +1,7 @@
 package com.colisweb.cats.gdrive.client
 
 import cats.effect.{Sync, Timer}
+import cats.implicits._
 import com.colisweb.gdrive.client.{
   GoogleAuthenticator,
   SheetRangeContent,
@@ -11,12 +12,13 @@ import com.colisweb.gdrive.client.{
 import com.google.api.services.sheets.v4.model.RowData
 import retry.{RetryDetails, RetryPolicy}
 
-class GoogleSheetClientSync[F[_]: Sync](
+class GoogleSheetClientSync[F[_]](
     authenticator: GoogleAuthenticator,
     retryPolicy: RetryPolicy[F],
     onError: (Throwable, RetryDetails) => F[Unit]
-)(
-    implicit timer: Timer[F]
+)(implicit
+    timer: Timer[F],
+    S: Sync[F]
 ) extends Retry[F](retryPolicy, onError) {
 
   val client = new GoogleSheetClient(authenticator)
@@ -48,12 +50,12 @@ class GoogleSheetClientSync[F[_]: Sync](
   def writeRanges(id: String, sheets: List[SheetRangeContent], inputOption: InputOption = InputOptionRaw): F[Unit] =
     retry(
       client.writeRanges(id, sheets, inputOption)
-    )
+    ) *> S.unit
 
   def writeRange(id: String, sheet: SheetRangeContent, inputOption: InputOption = InputOptionRaw): F[Unit] =
     retry(
       client.writeRange(id, sheet, inputOption)
-    )
+    ) *> S.unit
 
   def retrieveSheetsIds(id: String): F[Map[String, Int]] =
     retry(
@@ -63,9 +65,7 @@ class GoogleSheetClientSync[F[_]: Sync](
 
 object GoogleSheetClientSync {
   def apply[F[_]: Sync](
-      authenticator: GoogleAuthenticator,
-      retryPolicy: RetryPolicy[F],
-      onError: (Throwable, RetryDetails) => F[Unit]
+      authenticator: GoogleAuthenticator
   )(implicit timer: Timer[F]): GoogleSheetClientSync[F] =
     new GoogleSheetClientSync(authenticator, Retry.defaultPolicy, Retry.defaultOnError[F])
 }

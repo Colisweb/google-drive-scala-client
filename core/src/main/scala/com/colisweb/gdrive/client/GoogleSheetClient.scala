@@ -2,8 +2,9 @@ package com.colisweb.gdrive.client
 
 import com.google.api.services.sheets.v4.Sheets
 import com.google.api.services.sheets.v4.model._
+import com.google.auth.http.HttpCredentialsAdapter
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class GoogleSheetClient(authenticator: GoogleAuthenticator) {
 
@@ -11,7 +12,7 @@ class GoogleSheetClient(authenticator: GoogleAuthenticator) {
     new Sheets.Builder(
       authenticator.httpTransport,
       authenticator.jsonFactory,
-      authenticator.credentials
+      new HttpCredentialsAdapter(authenticator.credentials)
     ).setApplicationName(authenticator.applicationName)
       .build()
 
@@ -62,7 +63,8 @@ class GoogleSheetClient(authenticator: GoogleAuthenticator) {
       .get(0)
       .getData
       .asScala
-      .map(_.getRowData.asScala)
+      .toList
+      .map(_.getRowData.asScala.toList)
 
   def writeRanges(
       id: String,

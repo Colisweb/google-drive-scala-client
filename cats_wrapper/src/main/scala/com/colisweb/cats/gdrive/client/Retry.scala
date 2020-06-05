@@ -3,8 +3,8 @@ package com.colisweb.cats.gdrive.client
 import cats.effect.{Sync, Timer}
 import retry.{RetryDetails, RetryPolicies, RetryPolicy, retryingOnAllErrors}
 
-class Retry[F[_]](policy: RetryPolicy[F], onError: (Throwable, RetryDetails) => F[Unit])(
-    implicit F: Sync[F],
+class Retry[F[_]](policy: RetryPolicy[F], onError: (Throwable, RetryDetails) => F[Unit])(implicit
+    F: Sync[F],
     timer: Timer[F]
 ) {
 

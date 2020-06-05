@@ -2,14 +2,13 @@ package com.colisweb.gdrive.client
 
 import java.io.{FileInputStream, InputStream}
 
-import com.google.api.client.auth.oauth2.Credential
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.sheets.v4.SheetsScopes
+import com.google.auth.oauth2.GoogleCredentials
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 /**
   * Authenticates to Google API.
@@ -23,9 +22,8 @@ case class GoogleAuthenticator(credentialsInputStream: InputStream, applicationN
   lazy val httpTransport: NetHttpTransport = GoogleNetHttpTransport.newTrustedTransport()
   private val scopes                       = List(SheetsScopes.DRIVE)
 
-  // FIXME: update deprecated login flow
-  lazy val credentials: Credential =
-    GoogleCredential
+  lazy val credentials: GoogleCredentials =
+    GoogleCredentials
       .fromStream(credentialsInputStream)
       .createScoped(scopes.asJavaCollection)
 }

@@ -1,21 +1,27 @@
 import sbt._
 
-object GoogleDrive {
-  final val client = "com.google.api-client"   % "google-api-client"          % "1.30.9"
-  final val oauth  = "com.google.oauth-client" % "google-oauth-client"        % "1.30.6"
-  final val sheets = "com.google.apis"         % "google-api-services-sheets" % "v4-rev20200508-1.30.9"
-  final val drive  = "com.google.apis"         % "google-api-services-drive"  % "v3-rev20200413-1.30.9"
-
-  final val all = Seq(client, sheets, oauth, drive)
-}
-
-object Cats {
-  final val catsEffect = "org.typelevel"    %% "cats-effect" % "2.1.3"
-  final val catsRetry  = "com.github.cb372" %% "cats-retry"  % "1.1.0"
-
-  final val all = Seq(catsEffect, catsRetry)
-}
-
 object TestDependencies {
   val scalaTest = "org.scalatest" %% "scalatest" % "3.1.2" % Test
+}
+
+object Versions {
+  final val catsEffect        = "2.1.3"
+  final val catsRetry         = "1.1.0"
+  final val scalaCompat       = "2.1.6"
+  final val googleClient      = "1.30.9"
+  final val googleAuth        = "0.20.0"
+  final val googleSheets      = "v4-rev20200508-1.30.9"
+  final val googleDrive       = "v3-rev20200413-1.30.9"
+}
+
+object Dependencies {
+  final val catsEffect        = "org.typelevel"          %% "cats-effect"                     % Versions.catsEffect
+  final val catsRetry         = "com.github.cb372"       %% "cats-retry"                      % Versions.catsRetry
+  final val scalaCompat       = "org.scala-lang.modules" %% "scala-collection-compat"         % Versions.scalaCompat
+  final val googleClient      = "com.google.api-client"   % "google-api-client"               % Versions.googleClient
+  final val googleAuth        = "com.google.auth"         % "google-auth-library-oauth2-http" % Versions.googleAuth
+  final val googleCredentials = "com.google.auth"         % "google-auth-library-credentials" % Versions.googleAuth
+  final val googleSheets      = "com.google.apis"         % "google-api-services-sheets"      % Versions.googleSheets
+  final val googleDrive       = "com.google.apis"         % "google-api-services-drive"       % Versions.googleDrive
+
 }

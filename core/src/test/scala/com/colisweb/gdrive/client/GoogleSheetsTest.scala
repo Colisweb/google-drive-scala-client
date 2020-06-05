@@ -4,7 +4,7 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class GoogleSheetsTest extends AnyFlatSpec with Matchers {
 
