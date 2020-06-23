@@ -4,10 +4,11 @@ import cats.effect.{Sync, Timer}
 import cats.implicits._
 import com.colisweb.gdrive.client.{
   GoogleAuthenticator,
-  SheetRangeContent,
   GoogleSheetClient,
+  SheetProperties,
   InputOption,
-  InputOptionRaw
+  InputOptionRaw,
+  SheetRangeContent
 }
 import com.google.api.services.sheets.v4.model.RowData
 import retry.{RetryDetails, RetryPolicy}
@@ -23,9 +24,9 @@ class GoogleSheetClientSync[F[_]](
 
   val client = new GoogleSheetClient(authenticator)
 
-  def createSpreadsheet(name: String, sheetsTitles: List[String]): F[String] =
+  def createSpreadsheet(name: String, sheetsProperties: List[SheetProperties]): F[String] =
     retry(
-      client.createSpreadsheet(name, sheetsTitles)
+      client.createSpreadsheet(name, sheetsProperties)
     )
 
   def maybeReadSpreadsheet[T](

@@ -16,11 +16,11 @@ class GoogleSheetClient(authenticator: GoogleAuthenticator) {
     ).setApplicationName(authenticator.applicationName)
       .build()
 
-  def createSpreadsheet(name: String, sheetsTitles: List[String]): String = {
+  def createSpreadsheet(name: String, sheetProperties: List[SheetProperties]): String = {
 
-    val properties  = new SpreadsheetProperties().setTitle(name)
-    val sheets      = sheetsTitles.map(title => (new Sheet).setProperties((new SheetProperties).setTitle(title)))
-    val spreadSheet = (new Spreadsheet).setProperties(properties).setSheets(sheets.asJava)
+    val spreadsheetProperties = new SpreadsheetProperties().setTitle(name)
+    val sheets                = sheetProperties.map(properties => (new Sheet).setProperties(properties.toGoogle))
+    val spreadSheet           = (new Spreadsheet).setProperties(spreadsheetProperties).setSheets(sheets.asJava)
 
     service
       .spreadsheets()
