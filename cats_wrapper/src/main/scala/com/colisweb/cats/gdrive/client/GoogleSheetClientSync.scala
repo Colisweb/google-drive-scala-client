@@ -4,10 +4,11 @@ import cats.effect.{Sync, Timer}
 import cats.implicits._
 import com.colisweb.gdrive.client.{
   GoogleAuthenticator,
+  GoogleBatchRequest,
   GoogleSheetClient,
-  SheetProperties,
   InputOption,
   InputOptionRaw,
+  SheetProperties,
   SheetRangeContent
 }
 import com.google.api.services.sheets.v4.model.RowData
@@ -63,10 +64,12 @@ class GoogleSheetClientSync[F[_]](
       client.retrieveSheetsIds(id)
     )
 
-  def autoResizeColumns(id: String, sheetId: Int): F[Unit] =
-    retry(
-      client.autoResizeColumns(id, sheetId)
-    )
+  def batchRequests(spreadsheetId: String, requests: List[GoogleBatchRequest]): F[Unit] =
+    retry {
+      client.batchRequests(spreadsheetId, requests)
+
+      ()
+    }
 }
 
 object GoogleSheetClientSync {
