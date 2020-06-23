@@ -64,6 +64,11 @@ class GoogleDriveClientSync[F[_]](
     retry(
       client.share(fileId, email, role)
     )
+
+  def getParents(id: String): F[List[String]] =
+    retry(
+      client.getParents(id)
+    )
 }
 
 object GoogleDriveClientSync {

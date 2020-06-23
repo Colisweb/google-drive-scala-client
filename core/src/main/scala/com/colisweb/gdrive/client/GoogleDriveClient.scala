@@ -127,8 +127,18 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
 
     updatedFile.getParents.asScala
       .mkString("") == parentId
-
   }
+
+  def getParents(id: String): List[String] =
+    service
+      .files()
+      .get(id)
+      .setFields("id, parents")
+      .execute()
+      .getParents
+      .asScala
+      .toList
+
 }
 
 final case class GoogleSearchResult(id: String, name: String)
