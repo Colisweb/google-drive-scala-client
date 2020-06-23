@@ -62,6 +62,11 @@ class GoogleSheetClientSync[F[_]](
     retry(
       client.retrieveSheetsIds(id)
     )
+
+  def autoResizeColumns(id: String, sheetId: Int): F[Unit] =
+    retry(
+      client.autoResizeColumns(id, sheetId)
+    )
 }
 
 object GoogleSheetClientSync {

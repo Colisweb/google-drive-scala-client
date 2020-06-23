@@ -9,7 +9,7 @@ object Demo extends App {
   val drive         = new GoogleDriveClient(authenticator)
   val sheets        = new GoogleSheetClient(authenticator)
 
-  val spreadsheetId = sheets.createSpreadsheet("spreadsheet_name", List("foo"))
+  val spreadsheetId = sheets.createSpreadsheet("spreadsheet_name", List(SheetProperties("foo")))
 
   println(spreadsheetId)
 

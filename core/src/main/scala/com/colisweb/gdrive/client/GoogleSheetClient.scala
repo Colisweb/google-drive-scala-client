@@ -110,6 +110,16 @@ class GoogleSheetClient(authenticator: GoogleAuthenticator) {
       }
       .toMap
 
+  def autoResizeColumns(id: String, sheetId: Int): Unit = {
+    val dimensionsRange   = new DimensionRange().setSheetId(sheetId).setDimension("COLUMNS")
+    val resizeRequest     = new AutoResizeDimensionsRequest().setDimensions(dimensionsRange)
+    val autoResizeRequest = new Request().setAutoResizeDimensions(resizeRequest)
+
+    batchRequests(id, List(autoResizeRequest))
+
+    ()
+  }
+
   private def readGridDataAsStringAndTransposeToColumnFirst(sheetData: List[GridData]): List[List[String]] = {
     def rowIsNotEmpty: RowData => Boolean = _.getValues.asScala.forall(_.getEffectiveValue != null)
 
@@ -120,4 +130,11 @@ class GoogleSheetClient(authenticator: GoogleAuthenticator) {
       rowsWithoutEmptyCells.flatMap(_.getValues.asScala.toList.map(_.getFormattedValue))
     }.transpose
   }
+
+  private def batchRequests(spreadsheetId: String, requests: List[Request]): BatchUpdateSpreadsheetResponse =
+    service
+      .spreadsheets()
+      .batchUpdate(spreadsheetId, new BatchUpdateSpreadsheetRequest().setRequests(requests.asJava))
+      .execute()
+
 }
