@@ -24,7 +24,7 @@ case object HorizontalAlignmentField extends GoogleSheetField {
   val field = "userEnteredFormat.horizontalAlignment"
 }
 
-// TODO: Generic method to combine fields & remove
+// TODO: Generic method to combine fields & remove this
 case object TextFormatAndHorizontalAlignmentField extends GoogleSheetField {
   val field = "userEnteredFormat(textFormat, horizontalAlignment)"
 }

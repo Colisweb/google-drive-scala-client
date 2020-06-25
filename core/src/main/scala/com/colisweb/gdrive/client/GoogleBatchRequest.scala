@@ -6,9 +6,10 @@ sealed trait GoogleBatchRequest {
   def request: Request
 }
 
-final case class AutoResizeColumns(id: String, sheetId: Int) extends GoogleBatchRequest {
+final case class AutoResizeColumns(id: String, sheetId: Int, dimension: GoogleSheetDimension)
+    extends GoogleBatchRequest {
   def request: Request = {
-    val dimensionsRange = new DimensionRange().setSheetId(sheetId).setDimension("COLUMNS")
+    val dimensionsRange = new DimensionRange().setSheetId(sheetId).setDimension(dimension.code)
     val resizeRequest   = new AutoResizeDimensionsRequest().setDimensions(dimensionsRange)
 
     new Request().setAutoResizeDimensions(resizeRequest)
