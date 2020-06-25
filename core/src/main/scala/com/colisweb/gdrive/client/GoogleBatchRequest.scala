@@ -3,12 +3,11 @@ package com.colisweb.gdrive.client
 import com.colisweb.gdrive.client.formatting.{GoogleSheetCellFormat, GoogleSheetField}
 import com.google.api.services.sheets.v4.model._
 
-sealed trait GoogleBatchRequest {
+trait GoogleBatchRequest {
   def request: Request
 }
 
-final case class AutoResize(id: String, sheetId: Int, dimension: GoogleSheetDimension)
-    extends GoogleBatchRequest {
+final case class AutoResize(id: String, sheetId: Int, dimension: GoogleSheetDimension) extends GoogleBatchRequest {
   def request: Request = {
     val dimensionsRange = new DimensionRange().setSheetId(sheetId).setDimension(dimension.code)
     val resizeRequest   = new AutoResizeDimensionsRequest().setDimensions(dimensionsRange)
