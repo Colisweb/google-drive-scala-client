@@ -38,3 +38,14 @@ final case class CutPaste(source: GridRange, destination: GridCoordinate) extend
   def request: Request =
     new Request().setCutPaste(new CutPasteRequest().setSource(source).setDestination(destination))
 }
+
+final case class AppendDimension(
+    sheetId: Int,
+    dimension: GoogleSheetDimension,
+    length: Int
+) extends GoogleBatchRequest {
+  def request: Request =
+    new Request().setAppendDimension(
+      new AppendDimensionRequest().setSheetId(sheetId).setDimension(dimension.code).setLength(length)
+    )
+}

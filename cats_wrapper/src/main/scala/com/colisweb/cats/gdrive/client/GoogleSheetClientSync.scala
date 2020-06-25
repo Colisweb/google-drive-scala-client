@@ -65,11 +65,9 @@ class GoogleSheetClientSync[F[_]](
     )
 
   def batchRequests(spreadsheetId: String, requests: List[GoogleBatchRequest]): F[Unit] =
-    retry {
+    retry(
       client.batchRequests(spreadsheetId, requests)
-
-      ()
-    }
+    ) *> S.unit
 }
 
 object GoogleSheetClientSync {

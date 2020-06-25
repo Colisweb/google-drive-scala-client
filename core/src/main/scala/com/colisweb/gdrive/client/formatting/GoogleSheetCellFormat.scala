@@ -2,6 +2,7 @@ package com.colisweb.gdrive.client.formatting
 
 import com.google.api.services.sheets.v4.model.{CellFormat, Color, NumberFormat, TextFormat}
 
+// TODO? it's a monoid!
 trait GoogleSheetCellFormat {
   def combine: CellFormat => CellFormat
 
