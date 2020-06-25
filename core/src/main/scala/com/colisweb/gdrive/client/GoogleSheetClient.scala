@@ -16,7 +16,7 @@ class GoogleSheetClient(authenticator: GoogleAuthenticator) {
     ).setApplicationName(authenticator.applicationName)
       .build()
 
-  def createSpreadsheet(name: String, sheetProperties: List[SheetProperties]): String = {
+  def createSpreadsheet(name: String, sheetProperties: List[GoogleSheetProperties]): String = {
 
     val spreadsheetProperties = new SpreadsheetProperties().setTitle(name)
     val sheets                = sheetProperties.map(properties => (new Sheet).setProperties(properties.toGoogle))

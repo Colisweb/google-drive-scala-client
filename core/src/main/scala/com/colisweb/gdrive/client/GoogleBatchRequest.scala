@@ -17,26 +17,26 @@ final case class AutoResize(id: String, sheetId: Int, dimension: GoogleSheetDime
 }
 
 final case class FormatRange(
-    range: GridRange,
+    range: GoogleGridRange,
     cellFormat: GoogleSheetCellFormat,
     fields: GoogleSheetField
 ) extends GoogleBatchRequest {
   def request: Request = {
     val cellData          = new CellData().setUserEnteredFormat(cellFormat.format)
-    val repeatCellRequest = new RepeatCellRequest().setRange(range).setCell(cellData).setFields(fields.field)
+    val repeatCellRequest = new RepeatCellRequest().setRange(range.toGoogle).setCell(cellData).setFields(fields.field)
 
     new Request().setRepeatCell(repeatCellRequest)
   }
 }
 
-final case class CopyPaste(source: GridRange, destination: GridRange) extends GoogleBatchRequest {
+final case class CopyPaste(source: GoogleGridRange, destination: GoogleGridRange) extends GoogleBatchRequest {
   def request: Request =
-    new Request().setCopyPaste(new CopyPasteRequest().setSource(source).setDestination(destination))
+    new Request().setCopyPaste(new CopyPasteRequest().setSource(source.toGoogle).setDestination(destination.toGoogle))
 }
 
-final case class CutPaste(source: GridRange, destination: GridCoordinate) extends GoogleBatchRequest {
+final case class CutPaste(source: GoogleGridRange, destination: GridCoordinate) extends GoogleBatchRequest {
   def request: Request =
-    new Request().setCutPaste(new CutPasteRequest().setSource(source).setDestination(destination))
+    new Request().setCutPaste(new CutPasteRequest().setSource(source.toGoogle).setDestination(destination))
 }
 
 final case class AppendDimension(

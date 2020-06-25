@@ -14,8 +14,9 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
     val drive         = new GoogleDriveClient(authenticator)
     val sheets        = new GoogleSheetClient(authenticator)
 
-    val sheetProperties = List(SheetProperties("foo"), SheetProperties("toto", GridProperties(frozenRowCount = 1)))
-    val spreadsheetId   = sheets.createSpreadsheet("spreadsheet_name", sheetProperties)
+    val sheetProperties =
+      List(GoogleSheetProperties("foo"), GoogleSheetProperties("toto", GoogleGridProperties(frozenRowCount = 1)))
+    val spreadsheetId = sheets.createSpreadsheet("spreadsheet_name", sheetProperties)
 
     val range1 = "toto!A1:C1"
     val range2 = "toto!A2:C2"
@@ -41,8 +42,9 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
     val drive         = new GoogleDriveClient(authenticator)
     val sheets        = new GoogleSheetClient(authenticator)
 
-    val sheetProperties = List(SheetProperties("foo"), SheetProperties("toto", GridProperties(frozenRowCount = 1)))
-    val spreadsheetId   = sheets.createSpreadsheet("spreadsheet_name", sheetProperties)
+    val sheetProperties =
+      List(GoogleSheetProperties("foo"), GoogleSheetProperties("toto", GoogleGridProperties(frozenRowCount = 1)))
+    val spreadsheetId = sheets.createSpreadsheet("spreadsheet_name", sheetProperties)
 
     val range1 = "toto!A1:C1"
     val range2 = "toto!A2:C2"
@@ -67,8 +69,9 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
     val drive         = new GoogleDriveClient(authenticator)
     val sheets        = new GoogleSheetClient(authenticator)
 
-    val sheetProperties = List(SheetProperties("foo"), SheetProperties("toto", GridProperties(frozenRowCount = 1)))
-    val spreadsheetId   = sheets.createSpreadsheet("spreadsheet_name", sheetProperties)
+    val sheetProperties =
+      List(GoogleSheetProperties("foo"), GoogleSheetProperties("toto", GoogleGridProperties(frozenRowCount = 1)))
+    val spreadsheetId = sheets.createSpreadsheet("spreadsheet_name", sheetProperties)
 
     val data = List.tabulate(2, 3)((r, c) => s"data $r $c")
 
@@ -85,8 +88,9 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
     val drive         = new GoogleDriveClient(authenticator)
     val sheets        = new GoogleSheetClient(authenticator)
 
-    val sheetProperties = List(SheetProperties("foo"), SheetProperties("toto", GridProperties(frozenRowCount = 1)))
-    val spreadsheetId   = sheets.createSpreadsheet("spreadsheet_name", sheetProperties)
+    val sheetProperties =
+      List(GoogleSheetProperties("foo"), GoogleSheetProperties("toto", GoogleGridProperties(frozenRowCount = 1)))
+    val spreadsheetId = sheets.createSpreadsheet("spreadsheet_name", sheetProperties)
 
     val data = List.tabulate(2, 3)((r, c) => s"data $r $c")
 

@@ -8,7 +8,7 @@ import com.colisweb.gdrive.client.{
   GoogleSheetClient,
   InputOption,
   InputOptionRaw,
-  SheetProperties,
+  GoogleSheetProperties,
   SheetRangeContent
 }
 import com.google.api.services.sheets.v4.model.RowData
@@ -25,7 +25,7 @@ class GoogleSheetClientSync[F[_]](
 
   val client = new GoogleSheetClient(authenticator)
 
-  def createSpreadsheet(name: String, sheetsProperties: List[SheetProperties]): F[String] =
+  def createSpreadsheet(name: String, sheetsProperties: List[GoogleSheetProperties]): F[String] =
     retry(
       client.createSpreadsheet(name, sheetsProperties)
     )
