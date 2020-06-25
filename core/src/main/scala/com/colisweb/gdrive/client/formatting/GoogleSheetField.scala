@@ -1,4 +1,4 @@
-package com.colisweb.gdrive.client
+package com.colisweb.gdrive.client.formatting
 
 trait GoogleSheetField {
   def field: String

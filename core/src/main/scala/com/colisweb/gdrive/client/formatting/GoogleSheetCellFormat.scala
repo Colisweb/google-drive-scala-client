@@ -1,4 +1,4 @@
-package com.colisweb.gdrive.client
+package com.colisweb.gdrive.client.formatting
 
 import com.google.api.services.sheets.v4.model.{CellFormat, Color, NumberFormat, TextFormat}
 
@@ -30,8 +30,8 @@ final case class BackgroundColorFormat(red: Float, green: Float, blue: Float) ex
   val combine: CellFormat => CellFormat = _.setBackgroundColor(new Color().setRed(red).setGreen(green).setBlue(blue))
 }
 
-final case class HorizontalAlignmentFormat(alignment: String) extends GoogleSheetCellFormat {
-  val combine: CellFormat => CellFormat = _.setHorizontalAlignment(alignment)
+final case class HorizontalAlignmentFormat(alignment: HorizontalAlignment) extends GoogleSheetCellFormat {
+  val combine: CellFormat => CellFormat = _.setHorizontalAlignment(alignment.code)
 }
 
 final case class CellTextFormat(textFormat: TextFormat) extends GoogleSheetCellFormat {
