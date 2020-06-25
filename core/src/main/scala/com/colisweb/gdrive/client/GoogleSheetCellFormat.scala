@@ -6,10 +6,10 @@ trait GoogleSheetCellFormat {
   def format: CellFormat
 }
 
-case object Bold extends GoogleSheetCellFormat {
+case object BoldFormat extends GoogleSheetCellFormat {
   val format: CellFormat = new CellFormat().setTextFormat(new TextFormat().setBold(true))
 }
 
-case object Percentage extends GoogleSheetCellFormat {
+case object PercentageFormat extends GoogleSheetCellFormat {
   val format: CellFormat = new CellFormat().setNumberFormat(new NumberFormat().setType("PERCENT").setPattern("#0.00%"))
 }

@@ -4,27 +4,27 @@ trait GoogleSheetField {
   def field: String
 }
 
-case object Number extends GoogleSheetField {
+case object NumberFormatField extends GoogleSheetField {
   val field = "userEnteredFormat.numberFormat"
 }
 
-case object BoldText extends GoogleSheetField {
+case object BoldTextField extends GoogleSheetField {
   val field = "userEnteredFormat.textFormat.bold"
 }
 
-case object BackgroundColor extends GoogleSheetField {
+case object BackgroundColorField extends GoogleSheetField {
   val field = "userEnteredFormat.backgroundColor"
 }
 
-case object Text extends GoogleSheetField {
+case object TextFormatField extends GoogleSheetField {
   val field = "userEnteredFormat.textFormat"
 }
 
-case object HorizontalAlignment extends GoogleSheetField {
+case object HorizontalAlignmentField extends GoogleSheetField {
   val field = "userEnteredFormat.horizontalAlignment"
 }
 
 // TODO: Generic method to combine fields & remove
-case object TextFormatAndHorizontalAlignment extends GoogleSheetField {
+case object TextFormatAndHorizontalAlignmentField extends GoogleSheetField {
   val field = "userEnteredFormat(textFormat, horizontalAlignment)"
 }
