@@ -11,31 +11,36 @@ final case class GoogleGridCoordinate(sheetId: Int, rowIndex: Int, columnIndex: 
 
 final case class GoogleGridRange(
     sheetId: Int,
-    row: GoogleDimensionRange = GoogleDimensionRange(),
-    col: GoogleDimensionRange = GoogleDimensionRange()
+    row: Option[GoogleDimensionRange] = None,
+    column: Option[GoogleDimensionRange] = None
 ) {
-
   def toGoogle: GridRange = {
-    val gridRange = new GridRange()
-      .setSheetId(sheetId)
-      .setStartRowIndex(row.index)
-      .setStartColumnIndex(col.index)
+    val gridRange = new GridRange().setSheetId(sheetId)
 
-    (row.length, col.length) match {
-      case (None, None) =>
-        gridRange
-
-      case (Some(length), None) =>
-        gridRange.setEndRowIndex(row.index + length)
-
-      case (None, Some(length)) =>
-        gridRange.setEndColumnIndex(col.index + length)
-
-      case (Some(rowLength), Some(colLength)) =>
-        gridRange
-          .setEndColumnIndex(col.index + colLength)
-          .setEndRowIndex(row.index + rowLength)
+    val rowGridRange = row.fold(gridRange) {
+      case GoogleDimensionRange(i, None)         => gridRange.setStartRowIndex(i)
+      case GoogleDimensionRange(i, Some(length)) => gridRange.setStartRowIndex(i).setEndRowIndex(i + length)
     }
 
+    column.fold(rowGridRange) {
+      case GoogleDimensionRange(i, None)         => rowGridRange.setStartRowIndex(i)
+      case GoogleDimensionRange(i, Some(length)) => rowGridRange.setStartColumnIndex(i).setEndColumnIndex(i + length)
+    }
   }
+}
+
+object GoogleGridRange {
+
+  def singleRow(sheetId: Int, rowIndex: Int): GoogleGridRange =
+    multipleRows(sheetId, rowIndex, 1)
+
+  def singleColumn(sheetId: Int, columnIndex: Int): GoogleGridRange =
+    multipleColumns(sheetId, columnIndex, 1)
+
+  def multipleRows(sheetId: Int, rowIndex: Int, length: Int): GoogleGridRange =
+    GoogleGridRange(sheetId, row = Some(GoogleDimensionRange(rowIndex, Some(length))))
+
+  def multipleColumns(sheetId: Int, rowIndex: Int, length: Int): GoogleGridRange =
+    GoogleGridRange(sheetId, column = Some(GoogleDimensionRange(rowIndex, Some(length))))
+
 }
