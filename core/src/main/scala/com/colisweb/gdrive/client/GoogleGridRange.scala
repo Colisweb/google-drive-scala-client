@@ -1,8 +1,13 @@
 package com.colisweb.gdrive.client
 
-import com.google.api.services.sheets.v4.model.GridRange
+import com.google.api.services.sheets.v4.model.{GridCoordinate, GridRange}
 
 final case class GoogleDimensionRange(index: Int = 0, length: Option[Int] = None)
+
+final case class GoogleGridCoordinate(sheetId: Int, rowIndex: Int, columnIndex: Int) {
+  def toGoogle: GridCoordinate =
+    new GridCoordinate().setSheetId(sheetId).setRowIndex(rowIndex).setColumnIndex(columnIndex)
+}
 
 final case class GoogleGridRange(
     sheetId: Int,

@@ -34,9 +34,9 @@ final case class CopyPaste(source: GoogleGridRange, destination: GoogleGridRange
     new Request().setCopyPaste(new CopyPasteRequest().setSource(source.toGoogle).setDestination(destination.toGoogle))
 }
 
-final case class CutPaste(source: GoogleGridRange, destination: GridCoordinate) extends GoogleBatchRequest {
+final case class CutPaste(source: GoogleGridRange, destination: GoogleGridCoordinate) extends GoogleBatchRequest {
   def request: Request =
-    new Request().setCutPaste(new CutPasteRequest().setSource(source.toGoogle).setDestination(destination))
+    new Request().setCutPaste(new CutPasteRequest().setSource(source.toGoogle).setDestination(destination.toGoogle))
 }
 
 final case class AppendDimension(
