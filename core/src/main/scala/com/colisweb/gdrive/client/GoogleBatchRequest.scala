@@ -49,3 +49,20 @@ final case class AppendDimension(
       new AppendDimensionRequest().setSheetId(sheetId).setDimension(dimension.code).setLength(length)
     )
 }
+
+final case class InsertDimension(
+    sheetId: Int,
+    dimension: GoogleSheetDimension,
+    startIndex: Int,
+    endIndex: Int
+) extends GoogleBatchRequest {
+  def request: Request = {
+    val dimensionRange = new DimensionRange()
+      .setSheetId(sheetId)
+      .setStartIndex(startIndex)
+      .setEndIndex(endIndex)
+      .setDimension(dimension.code)
+
+    new Request().setInsertDimension(new InsertDimensionRequest().setRange(dimensionRange))
+  }
+}
