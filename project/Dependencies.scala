@@ -9,7 +9,7 @@ object Versions {
   final val catsRetry         = "1.1.1"
   final val scalaCompat       = "2.1.6"
   final val googleClient      = "1.30.9"
-  final val googleAuth        = "0.20.0"
+  final val googleAuth        = "0.21.0"
   final val googleSheets      = "v4-rev20200508-1.30.9"
   final val googleDrive       = "v3-rev20200609-1.30.9"
 }
