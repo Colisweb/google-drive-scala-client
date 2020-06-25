@@ -1,14 +1,6 @@
 package com.colisweb.gdrive.client
 
-import com.google.api.services.sheets.v4.model.{
-  AutoResizeDimensionsRequest,
-  CellData,
-  CellFormat,
-  DimensionRange,
-  GridRange,
-  RepeatCellRequest,
-  Request
-}
+import com.google.api.services.sheets.v4.model.{AutoResizeDimensionsRequest, CellData, CellFormat, CopyPasteRequest, DimensionRange, GridRange, RepeatCellRequest, Request}
 
 sealed trait GoogleBatchRequest {
   def request: Request
@@ -30,4 +22,9 @@ final case class FormatRange(range: GridRange, format: CellFormat, fields: Strin
 
     new Request().setRepeatCell(repeatCellRequest)
   }
+}
+
+final case class CopyPaste(source: GridRange, destination: GridRange) extends GoogleBatchRequest {
+  def request: Request =
+    new Request().setCopyPaste(new CopyPasteRequest().setSource(source).setDestination(destination))
 }

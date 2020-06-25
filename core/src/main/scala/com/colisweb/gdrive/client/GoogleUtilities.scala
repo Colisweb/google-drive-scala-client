@@ -23,7 +23,4 @@ object GoogleUtilities {
 
   def columnGridRange(columnIndex: Int, sheetId: Int, length: Int): GridRange =
     new GridRange().setSheetId(sheetId).setStartColumnIndex(columnIndex).setEndColumnIndex(columnIndex + length)
-
-  def copyPaste(source: GridRange, destination: GridRange): Request =
-    new Request().setCopyPaste(new CopyPasteRequest().setSource(source).setDestination(destination))
 }
