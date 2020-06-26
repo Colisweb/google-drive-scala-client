@@ -5,10 +5,12 @@ import java.io.File
 import com.colisweb.gdrive.client.GoogleDriveRole.GoogleDriveRole
 import com.google.api.client.http.FileContent
 import com.google.api.services.drive.Drive
-import com.google.api.services.drive.model.{Permission, File => DriveFile}
+import com.google.api.services.drive.model.{FileList, Permission, File => DriveFile}
 import com.google.auth.http.HttpCredentialsAdapter
 
+import scala.annotation.tailrec
 import scala.jdk.CollectionConverters._
+import scala.util.Try
 
 class GoogleDriveClient(authenticator: GoogleAuthenticator) {
 
@@ -37,11 +39,13 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
     folderId
   }
 
-  def delete(fileId: String) = {
+  def delete(fileId: String): Unit = {
     service
       .files()
       .delete(fileId)
       .execute()
+
+    ()
   }
 
   // The files must be shared with the service account for it to search them.
@@ -63,7 +67,6 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
         val id   = file.getId
         GoogleSearchResult(id, name)
       }
-
   }
 
   def share(fileId: String, email: String, role: GoogleDriveRole): Permission =
@@ -130,14 +133,59 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
   }
 
   def getParents(id: String): List[String] =
+    Try(
+      service
+        .files()
+        .get(id)
+        .setFields("id, parents")
+        .execute()
+        .getParents
+        .asScala
+        .toList
+    ).getOrElse(Nil)
+
+  @tailrec
+  final def isInSubFolderOf(id: String, rootId: String): Boolean =
+    getParents(id) match {
+      case Nil                                 => false
+      case parents if parents.contains(rootId) => true
+      case next :: _                           => isInSubFolderOf(next, rootId)
+    }
+
+  def listFiles(query: String): FileList =
     service
       .files()
-      .get(id)
-      .setFields("id, parents")
+      .list()
+      .setQ(query)
+      .setSpaces("drive")
+      .setFields("files(id, name, parents)")
       .execute()
-      .getParents
-      .asScala
-      .toList
+
+  def searchWithinFolder(
+      keywords: String,
+      rootId: String,
+      maybeMimeType: Option[GoogleMimeType] = None
+  ): Either[GoogleError, GoogleSearchResult] = {
+
+    val mimeTypeQueryPart = maybeMimeType.fold("")(mimeType => s" and mimeType = '${GoogleMimeType.name(mimeType)}'")
+    val query             = s"name contains '$keywords'" + mimeTypeQueryPart
+
+    val files = listFiles(query).getFiles.asScala.toList
+
+    val result =
+      files
+        .find(file => isInSubFolderOf(file.getId, rootId))
+        .map(file => GoogleSearchResult(file.getId, file.getName))
+
+    result.toRight {
+      maybeMimeType match {
+        case Some(GoogleSpreadsheetType) => SpreadsheetNotFound(keywords)
+        case Some(GoogleDriveFolderType) => FolderNotFound(keywords)
+        case Some(CsvFileType)           => CsvFileNotFound(keywords)
+        case None                        => FileNotFound(keywords)
+      }
+    }
+  }
 
 }
 
@@ -145,9 +193,9 @@ final case class GoogleSearchResult(id: String, name: String)
 
 object GoogleDriveRole extends Enumeration {
   type GoogleDriveRole = Value
-  val owner         = Value("owner")
-  val organizer     = Value("organizer")
-  val fileOrganizer = Value("fileOrganizer")
-  val writer        = Value("writer")
-  val commenter     = Value("commenter")
+  val owner: GoogleDriveRole         = Value("owner")
+  val organizer: GoogleDriveRole     = Value("organizer")
+  val fileOrganizer: GoogleDriveRole = Value("fileOrganizer")
+  val writer: GoogleDriveRole        = Value("writer")
+  val commenter: GoogleDriveRole     = Value("commenter")
 }
