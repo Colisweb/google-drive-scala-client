@@ -5,7 +5,7 @@ lazy val scala213               = "2.13.2"
 lazy val supportedScalaVersions = List(scala213, scala212)
 
 ThisBuild / organization := "com.colisweb"
-ThisBuild / scalaVersion := scala212
+ThisBuild / scalaVersion := scala213
 ThisBuild / scalafmtOnCompile := true
 ThisBuild / scalafmtCheck := true
 ThisBuild / scalafmtSbtCheck := true
