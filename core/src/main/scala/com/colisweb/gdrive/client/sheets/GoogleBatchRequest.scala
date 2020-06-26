@@ -1,6 +1,6 @@
-package com.colisweb.gdrive.client
+package com.colisweb.gdrive.client.sheets
 
-import com.colisweb.gdrive.client.formatting.{GoogleSheetCellFormat, GoogleSheetField}
+import com.colisweb.gdrive.client.sheets.formatting.{GoogleSheetCellFormat, GoogleSheetField}
 import com.google.api.services.sheets.v4.model._
 
 trait GoogleBatchRequest {

@@ -1,4 +1,4 @@
-package com.colisweb.gdrive.client.formatting
+package com.colisweb.gdrive.client.sheets.formatting
 
 sealed trait HorizontalAlignment {
   val code: String

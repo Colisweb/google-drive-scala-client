@@ -1,4 +1,4 @@
-package com.colisweb.gdrive.client
+package com.colisweb.gdrive.client.drive
 
 sealed trait GoogleMimeType
 case object GoogleSpreadsheetType extends GoogleMimeType

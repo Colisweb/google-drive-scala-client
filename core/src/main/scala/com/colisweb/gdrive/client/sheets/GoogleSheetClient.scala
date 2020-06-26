@@ -1,5 +1,6 @@
-package com.colisweb.gdrive.client
+package com.colisweb.gdrive.client.sheets
 
+import com.colisweb.gdrive.client.GoogleAuthenticator
 import com.google.api.services.sheets.v4.Sheets
 import com.google.api.services.sheets.v4.model._
 import com.google.auth.http.HttpCredentialsAdapter

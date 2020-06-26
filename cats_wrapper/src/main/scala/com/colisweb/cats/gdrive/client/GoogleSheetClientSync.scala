@@ -2,13 +2,13 @@ package com.colisweb.cats.gdrive.client
 
 import cats.effect.{Sync, Timer}
 import cats.implicits._
-import com.colisweb.gdrive.client.{
-  GoogleAuthenticator,
+import com.colisweb.gdrive.client.GoogleAuthenticator
+import com.colisweb.gdrive.client.sheets.{
   GoogleBatchRequest,
   GoogleSheetClient,
+  GoogleSheetProperties,
   InputOption,
   InputOptionRaw,
-  GoogleSheetProperties,
   SheetRangeContent
 }
 import com.google.api.services.sheets.v4.model.RowData

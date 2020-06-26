@@ -2,6 +2,7 @@ package com.colisweb.gdrive.client
 
 import java.io.{File, PrintWriter}
 
+import com.colisweb.gdrive.client.drive.{CsvFileType, GoogleDriveClient, GoogleSearchResult}
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers

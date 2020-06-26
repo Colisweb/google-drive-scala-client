@@ -1,4 +1,4 @@
-package com.colisweb.gdrive.client
+package com.colisweb.gdrive.client.sheets
 
 import com.google.api.services.sheets.v4.model.{GridProperties, SheetProperties}
 

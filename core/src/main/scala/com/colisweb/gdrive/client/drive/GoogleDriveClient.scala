@@ -1,8 +1,9 @@
-package com.colisweb.gdrive.client
+package com.colisweb.gdrive.client.drive
 
 import java.io.File
 
-import com.colisweb.gdrive.client.GoogleDriveRole.GoogleDriveRole
+import com.colisweb.gdrive.client._
+import com.colisweb.gdrive.client.drive.GoogleDriveRole.GoogleDriveRole
 import com.google.api.client.http.FileContent
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.model.{FileList, Permission, File => DriveFile}

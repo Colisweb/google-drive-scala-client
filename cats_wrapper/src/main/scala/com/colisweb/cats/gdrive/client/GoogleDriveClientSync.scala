@@ -4,19 +4,21 @@ import java.io.File
 
 import cats.effect.{Sync, Timer}
 import cats.implicits._
-import com.colisweb.gdrive.client.GoogleDriveRole.GoogleDriveRole
+import com.colisweb.gdrive.client.drive.{
+  CsvFileType,
+  GoogleDriveClient,
+  GoogleDriveFolderType,
+  GoogleMimeType,
+  GoogleSearchResult,
+  GoogleSpreadsheetType
+}
+import com.colisweb.gdrive.client.drive.GoogleDriveRole.GoogleDriveRole
 import com.colisweb.gdrive.client.{
   CsvFileNotFound,
-  CsvFileType,
   FileNotFound,
   FolderNotFound,
   GoogleAuthenticator,
-  GoogleDriveClient,
-  GoogleDriveFolderType,
   GoogleError,
-  GoogleMimeType,
-  GoogleSearchResult,
-  GoogleSpreadsheetType,
   SpreadsheetNotFound
 }
 import com.google.api.services.drive.model.{FileList, Permission}

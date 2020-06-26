@@ -1,6 +1,6 @@
-package com.colisweb.gdrive.client.chart
+package com.colisweb.gdrive.client.sheets.chart
 
-import com.colisweb.gdrive.client.{GoogleBatchRequest, GoogleGridRange}
+import com.colisweb.gdrive.client.sheets.{GoogleBatchRequest, GoogleGridRange}
 import com.google.api.services.sheets.v4.model._
 
 import scala.jdk.CollectionConverters._

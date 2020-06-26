@@ -1,4 +1,6 @@
 import com.colisweb.gdrive.client._
+import com.colisweb.gdrive.client.drive.{GoogleDriveClient, GoogleDriveRole}
+import com.colisweb.gdrive.client.sheets.{GoogleSheetClient, GoogleSheetProperties, SheetRangeContent}
 
 import scala.jdk.CollectionConverters._
 

@@ -1,5 +1,12 @@
 package com.colisweb.gdrive.client
 
+import com.colisweb.gdrive.client.drive.GoogleDriveClient
+import com.colisweb.gdrive.client.sheets.{
+  GoogleGridProperties,
+  GoogleSheetClient,
+  GoogleSheetProperties,
+  SheetRangeContent
+}
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers

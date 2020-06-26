@@ -1,4 +1,4 @@
-package com.colisweb.gdrive.client.formatting
+package com.colisweb.gdrive.client.sheets.formatting
 
 import com.google.api.services.sheets.v4.model.{CellFormat, Color, NumberFormat}
 

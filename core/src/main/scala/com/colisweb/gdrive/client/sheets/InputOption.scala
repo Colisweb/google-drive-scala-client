@@ -1,4 +1,4 @@
-package com.colisweb.gdrive.client
+package com.colisweb.gdrive.client.sheets
 
 sealed trait InputOption {
   def value: String
