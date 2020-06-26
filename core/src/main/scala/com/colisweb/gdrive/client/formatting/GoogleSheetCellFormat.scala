@@ -1,6 +1,6 @@
 package com.colisweb.gdrive.client.formatting
 
-import com.google.api.services.sheets.v4.model.{CellFormat, Color, NumberFormat, TextFormat}
+import com.google.api.services.sheets.v4.model.{CellFormat, Color, NumberFormat}
 
 // TODO? it's a monoid!
 trait GoogleSheetCellFormat {
@@ -19,10 +19,6 @@ object GoogleSheetCellFormat {
 
 }
 
-case object BoldFormat extends GoogleSheetCellFormat {
-  val combine: CellFormat => CellFormat = _.setTextFormat(new TextFormat().setBold(true))
-}
-
 case object PercentageFormat extends GoogleSheetCellFormat {
   val combine: CellFormat => CellFormat = _.setNumberFormat(new NumberFormat().setType("PERCENT").setPattern("#0.00%"))
 }
@@ -35,6 +31,6 @@ final case class HorizontalAlignmentFormat(alignment: HorizontalAlignment) exten
   val combine: CellFormat => CellFormat = _.setHorizontalAlignment(alignment.code)
 }
 
-final case class CellTextFormat(textFormat: TextFormat) extends GoogleSheetCellFormat {
-  val combine: CellFormat => CellFormat = _.setTextFormat(textFormat)
+final case class CellTextFormat(textFormat: GoogleSheetTextFormat) extends GoogleSheetCellFormat {
+  val combine: CellFormat => CellFormat = _.setTextFormat(textFormat.format)
 }

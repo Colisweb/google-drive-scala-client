@@ -15,12 +15,4 @@ object GoogleUtilities {
       }.asJava
     )
 
-  def singleRowGridRange(rowIndex: Int, sheetId: Int): GridRange =
-    new GridRange().setSheetId(sheetId).setStartRowIndex(rowIndex).setEndRowIndex(rowIndex + 1)
-
-  def singleColumnGridRange(columnIndex: Int, sheetId: Int): GridRange =
-    columnGridRange(columnIndex, sheetId, 1)
-
-  def columnGridRange(columnIndex: Int, sheetId: Int, length: Int): GridRange =
-    new GridRange().setSheetId(sheetId).setStartColumnIndex(columnIndex).setEndColumnIndex(columnIndex + length)
 }
