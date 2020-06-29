@@ -4,23 +4,9 @@ import java.io.File
 
 import cats.effect.{Sync, Timer}
 import cats.implicits._
-import com.colisweb.gdrive.client.drive.{
-  CsvFileType,
-  GoogleDriveClient,
-  GoogleDriveFolderType,
-  GoogleMimeType,
-  GoogleSearchResult,
-  GoogleSpreadsheetType
-}
+import com.colisweb.gdrive.client.GoogleAuthenticator
 import com.colisweb.gdrive.client.drive.GoogleDriveRole.GoogleDriveRole
-import com.colisweb.gdrive.client.{
-  CsvFileNotFound,
-  FileNotFound,
-  FolderNotFound,
-  GoogleAuthenticator,
-  GoogleError,
-  SpreadsheetNotFound
-}
+import com.colisweb.gdrive.client.drive.{GoogleDriveClient, GoogleMimeType, GoogleSearchResult}
 import com.google.api.services.drive.model.{FileList, Permission}
 import retry._
 
@@ -104,21 +90,11 @@ class GoogleDriveClientSync[F[_]](
     id.tailRecM(step)
   }
 
-  def searchWithinFolder(
+  def findFileInSubFolderOf(
       keywords: String,
       rootId: String,
       maybeMimeType: Option[GoogleMimeType] = None
-  ): F[Either[GoogleError, GoogleSearchResult]] = {
-
-    def optionToError(maybeResult: Option[GoogleSearchResult]): Either[GoogleError, GoogleSearchResult] =
-      maybeResult.toRight {
-        maybeMimeType match {
-          case Some(GoogleSpreadsheetType) => SpreadsheetNotFound(keywords)
-          case Some(GoogleDriveFolderType) => FolderNotFound(keywords)
-          case Some(CsvFileType)           => CsvFileNotFound(keywords)
-          case None                        => FileNotFound(keywords)
-        }
-      }
+  ): F[Option[GoogleSearchResult]] = {
 
     val mimeTypeQueryPart = maybeMimeType.fold("")(mimeType => s" and mimeType = '${GoogleMimeType.name(mimeType)}'")
     val query             = s"name contains '$keywords'" + mimeTypeQueryPart
@@ -133,7 +109,6 @@ class GoogleDriveClientSync[F[_]](
             .map { case (_, file) => GoogleSearchResult(file.getId, file.getName) }
         }
       }
-      .map(optionToError)
   }
 }
 

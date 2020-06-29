@@ -11,7 +11,6 @@ import com.google.auth.http.HttpCredentialsAdapter
 
 import scala.annotation.tailrec
 import scala.jdk.CollectionConverters._
-import scala.util.Try
 
 class GoogleDriveClient(authenticator: GoogleAuthenticator) {
 
@@ -134,16 +133,14 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
   }
 
   def getParents(id: String): List[String] =
-    Try(
+    Option(
       service
         .files()
         .get(id)
         .setFields("id, parents")
         .execute()
         .getParents
-        .asScala
-        .toList
-    ).getOrElse(Nil)
+    ).map(_.asScala.toList).getOrElse(Nil)
 
   @tailrec
   final def isInSubFolderOf(id: String, rootId: String): Boolean =
@@ -162,30 +159,18 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
       .setFields("files(id, name, parents)")
       .execute()
 
-  def searchWithinFolder(
+  def findFileInSubFolderOf(
       keywords: String,
       rootId: String,
       maybeMimeType: Option[GoogleMimeType] = None
-  ): Either[GoogleError, GoogleSearchResult] = {
+  ): Option[GoogleSearchResult] = {
 
     val mimeTypeQueryPart = maybeMimeType.fold("")(mimeType => s" and mimeType = '${GoogleMimeType.name(mimeType)}'")
     val query             = s"name contains '$keywords'" + mimeTypeQueryPart
 
-    val files = listFiles(query).getFiles.asScala.toList
-
-    val result =
-      files
-        .find(file => isInSubFolderOf(file.getId, rootId))
-        .map(file => GoogleSearchResult(file.getId, file.getName))
-
-    result.toRight {
-      maybeMimeType match {
-        case Some(GoogleSpreadsheetType) => SpreadsheetNotFound(keywords)
-        case Some(GoogleDriveFolderType) => FolderNotFound(keywords)
-        case Some(CsvFileType)           => CsvFileNotFound(keywords)
-        case None                        => FileNotFound(keywords)
-      }
-    }
+    listFiles(query).getFiles.asScala.toList
+      .find(file => isInSubFolderOf(file.getId, rootId))
+      .map(file => GoogleSearchResult(file.getId, file.getName))
   }
 
 }
