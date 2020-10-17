@@ -10,8 +10,7 @@ import com.google.auth.oauth2.GoogleCredentials
 
 import scala.jdk.CollectionConverters._
 
-/**
-  * Authenticates to Google API.
+/** Authenticates to Google API.
   *
   * @param credentialsInputStream path to a JSON file in resources
   * @param applicationName registered name
