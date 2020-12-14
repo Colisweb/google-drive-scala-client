@@ -1,7 +1,6 @@
 package com.colisweb.gdrive.client.drive
 
-import java.io.File
-
+import java.io.{File, InputStream}
 import com.colisweb.gdrive.client._
 import com.colisweb.gdrive.client.drive.GoogleDriveRole.GoogleDriveRole
 import com.google.api.client.http.FileContent
@@ -26,9 +25,10 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
       folderId: String,
       file: File,
       driveFilename: String,
-      filetype: GoogleMimeType
+      filetype: GoogleMimeType,
+      outputFiletype: Option[GoogleMimeType] // possibility to convert the file to a google workspace file type
   ): String = {
-    val fileId = uploadFile(file, driveFilename, filetype)
+    val fileId = uploadFile(file, driveFilename, filetype, outputFiletype)
     move(fileId, folderId)
     fileId
   }
@@ -78,15 +78,15 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
   def uploadFile(
       file: File,
       driveFilename: String,
-      filetype: GoogleMimeType
+      filetype: GoogleMimeType,
+      outputFiletype: Option[GoogleMimeType]
   ): String = {
-    val filetypeName = GoogleMimeType.name(filetype)
     val driveFileMetadata =
       new DriveFile()
         .setName(driveFilename)
-        .setMimeType(filetypeName)
+        .setMimeType(GoogleMimeType.name(outputFiletype.getOrElse(filetype)))
 
-    val content = new FileContent(filetypeName, file)
+    val content = new FileContent(GoogleMimeType.name(filetype), file)
 
     service.files
       .create(driveFileMetadata, content)
@@ -172,6 +172,12 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
       .find(file => isInSubFolderOf(file.getId, rootId))
       .map(file => GoogleSearchResult(file.getId, file.getName))
   }
+
+  def downloadAsInputStream(fileId: String): InputStream =
+    service
+      .files()
+      .get(fileId)
+      .executeMediaAsInputStream()
 
 }
 
