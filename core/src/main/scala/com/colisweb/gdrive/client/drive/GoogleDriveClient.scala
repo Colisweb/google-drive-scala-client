@@ -82,13 +82,12 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
       filetype: GoogleMimeType,
       outputFiletype: Option[GoogleMimeType]
   ): String = {
-    val filetypeName = GoogleMimeType.name(outputFiletype.getOrElse(filetype))
     val driveFileMetadata =
       new DriveFile()
         .setName(driveFilename)
-        .setMimeType(filetypeName)
+        .setMimeType(GoogleMimeType.name(outputFiletype.getOrElse(filetype)))
 
-    val content = new FileContent(filetypeName, file)
+    val content = new FileContent(GoogleMimeType.name(filetype), file)
 
     service.files
       .create(driveFileMetadata, content)
