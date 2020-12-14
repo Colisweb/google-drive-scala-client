@@ -26,9 +26,10 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
       folderId: String,
       file: File,
       driveFilename: String,
-      filetype: GoogleMimeType
+      filetype: GoogleMimeType,
+      outputFiletype: Option[GoogleMimeType] // possibility to convert the file to a google workspace file type
   ): String = {
-    val fileId = uploadFile(file, driveFilename, filetype)
+    val fileId = uploadFile(file, driveFilename, filetype, outputFiletype)
     move(fileId, folderId)
     fileId
   }
@@ -78,9 +79,10 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
   def uploadFile(
       file: File,
       driveFilename: String,
-      filetype: GoogleMimeType
+      filetype: GoogleMimeType,
+      outputFiletype: Option[GoogleMimeType]
   ): String = {
-    val filetypeName = GoogleMimeType.name(filetype)
+    val filetypeName = GoogleMimeType.name(outputFiletype.getOrElse(filetype))
     val driveFileMetadata =
       new DriveFile()
         .setName(driveFilename)

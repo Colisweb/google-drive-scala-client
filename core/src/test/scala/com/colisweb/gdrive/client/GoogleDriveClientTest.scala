@@ -20,7 +20,7 @@ class GoogleDriveClientTest extends AnyFlatSpec with Matchers {
     pw.close()
 
     val folderId = drive.createFolder("folder_name")
-    val fileId   = drive.uploadFileTo(folderId, file, "filename", CsvFileType)
+    val fileId   = drive.uploadFileTo(folderId, file, "filename", CsvFileType, None)
 
     val l = drive.listFilesInFolder(folderId)
 
