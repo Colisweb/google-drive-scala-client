@@ -1,7 +1,6 @@
 package com.colisweb.gdrive.client.drive
 
-import java.io.File
-
+import java.io.{File, InputStream}
 import com.colisweb.gdrive.client._
 import com.colisweb.gdrive.client.drive.GoogleDriveRole.GoogleDriveRole
 import com.google.api.client.http.FileContent
@@ -173,6 +172,12 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
       .find(file => isInSubFolderOf(file.getId, rootId))
       .map(file => GoogleSearchResult(file.getId, file.getName))
   }
+
+  def downloadAsInputStream(fileId: String): InputStream =
+    service
+      .files()
+      .get(fileId)
+      .executeMediaAsInputStream()
 
 }
 

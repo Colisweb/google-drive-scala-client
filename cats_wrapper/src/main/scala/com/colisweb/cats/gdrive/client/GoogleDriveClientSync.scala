@@ -1,7 +1,6 @@
 package com.colisweb.cats.gdrive.client
 
-import java.io.File
-
+import java.io.{File, InputStream}
 import cats.effect.{Sync, Timer}
 import cats.implicits._
 import com.colisweb.gdrive.client.GoogleAuthenticator
@@ -116,6 +115,11 @@ class GoogleDriveClientSync[F[_]](
         }
       }
   }
+
+  def downloadAsInputStream(fileId: String): F[InputStream] =
+    retry(
+      client.downloadAsInputStream(fileId)
+    )
 }
 
 object GoogleDriveClientSync {
