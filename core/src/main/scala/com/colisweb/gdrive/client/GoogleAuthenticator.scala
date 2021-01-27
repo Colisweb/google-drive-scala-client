@@ -1,23 +1,22 @@
 package com.colisweb.gdrive.client
 
-import java.io.{FileInputStream, InputStream}
-
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.http.javanet.NetHttpTransport
-import com.google.api.client.json.jackson2.JacksonFactory
+import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.sheets.v4.SheetsScopes
 import com.google.auth.oauth2.GoogleCredentials
 
+import java.io.{FileInputStream, InputStream}
 import scala.jdk.CollectionConverters._
 
 /** Authenticates to Google API.
   *
   * @param credentialsInputStream path to a JSON file in resources
-  * @param applicationName registered name
+  * @param applicationName        registered name
   */
 case class GoogleAuthenticator(credentialsInputStream: InputStream, applicationName: String) {
 
-  lazy val jsonFactory: JacksonFactory     = JacksonFactory.getDefaultInstance
+  lazy val jsonFactory: GsonFactory        = GsonFactory.getDefaultInstance
   lazy val httpTransport: NetHttpTransport = GoogleNetHttpTransport.newTrustedTransport()
   private val scopes                       = List(SheetsScopes.DRIVE)
 
