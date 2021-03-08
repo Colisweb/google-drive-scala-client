@@ -10,7 +10,7 @@ object Versions {
   final val scalaCompat       = "2.4.2"
   final val googleClient      = "1.31.3"
   final val googleAuth        = "0.24.1"
-  final val googleSheets      = "v4-rev20201130-1.31.0"
+  final val googleSheets      = "v4-rev20210223-1.31.0"
   final val googleDrive       = "v3-rev20210207-1.31.0"
 }
 
