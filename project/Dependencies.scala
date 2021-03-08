@@ -1,7 +1,7 @@
 import sbt._
 
 object TestDependencies {
-  val scalaTest = "org.scalatest" %% "scalatest" % "3.2.5" % Test
+  val scalaTest = "org.scalatest" %% "scalatest" % "3.2.6" % Test
 }
 
 object Versions {
