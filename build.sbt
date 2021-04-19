@@ -16,6 +16,10 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 
 //// Main projects
 
+lazy val root = Project(id = "google-drive-scala", base = file("."))
+  .settings(noPublishSettings: _*)
+  .aggregate(core, cats_wrapper)
+
 lazy val core = Project(id = "google-drive-scala-client", base = file("core"))
   .settings(
     libraryDependencies ++= Seq(
@@ -41,3 +45,9 @@ lazy val cats_wrapper = Project(id = "google-drive-scala-client-cats", base = fi
   )
   .dependsOn(core)
 
+def noPublishSettings =
+  Seq(
+    publish := {},
+    publishLocal := {},
+    publishArtifact := false
+  )
