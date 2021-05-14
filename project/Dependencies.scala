@@ -11,7 +11,7 @@ object Versions {
   final val googleClient      = "1.31.4"
   final val googleAuth        = "0.25.3"
   final val googleSheets      = "v4-rev20210322-1.31.0"
-  final val googleDrive       = "v3-rev20210315-1.31.0"
+  final val googleDrive       = "v3-rev20210509-1.31.0"
 }
 
 object Dependencies {
