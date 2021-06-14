@@ -1,6 +1,9 @@
 include:
   - 'https://colisweb-open-source.gitlab.io/ci-common/v13.4.5/templates/scala.yml'
 
+compile gdrive-scala-client:
+  extends: .sbt-compile-cross
+
 format:
   extends: .sbt-format
 
