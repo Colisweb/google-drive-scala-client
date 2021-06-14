@@ -1,25 +1,22 @@
 include:
-  - 'https://colisweb-open-source.gitlab.io/ci-common/v13.4.3/templates/scala.yml'
+  - 'https://colisweb-open-source.gitlab.io/ci-common/v13.4.5/templates/scala.yml'
 
 format:
   extends: .sbt-format
-  tags: []
 
 test google-drive-scala-client:
-  extends: .sbt-test
-  tags: []
+  extends:
+  - .sbt-test
+  - .rules-only-for-master
   script:
     - gpg -q --decrypt core/src/test/resources/google-credentials.json.secret > core/src/test/resources/google-credentials.json
     - sbt +test
 
 unused-dependencies:
   extends: .sbt-unused-dependencies
-  tags: []
 
 version:
   extends: .version
-  tags: []
 
 publish on sonatype:
   extends: .sonatype-publish
-  tags: []
