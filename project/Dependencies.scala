@@ -6,7 +6,7 @@ object TestDependencies {
 
 object Versions {
   final val catsEffect   = "2.5.3"
-  final val catsRetry    = "2.1.1"
+  final val catsRetry    = "3.0.0"
   final val scalaCompat  = "2.5.0"
   final val googleClient = "1.32.1"
   final val googleAuth   = "1.1.0"
