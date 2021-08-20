@@ -1,6 +1,6 @@
 package com.colisweb.cats.gdrive.client
 
-import cats.effect.{Sync, Timer}
+import cats.effect.Sync
 import cats.implicits._
 import com.colisweb.gdrive.client.GoogleAuthenticator
 import com.colisweb.gdrive.client.sheets.{
@@ -13,13 +13,14 @@ import com.colisweb.gdrive.client.sheets.{
 }
 import com.google.api.services.sheets.v4.model.RowData
 import retry.{RetryDetails, RetryPolicy}
+import cats.effect.Temporal
 
 class GoogleSheetClientSync[F[_]](
     authenticator: GoogleAuthenticator,
     retryPolicy: RetryPolicy[F],
     onError: (Throwable, RetryDetails) => F[Unit]
 )(implicit
-    timer: Timer[F],
+    timer: Temporal[F],
     S: Sync[F]
 ) extends Retry[F](retryPolicy, onError) {
 
@@ -73,6 +74,6 @@ class GoogleSheetClientSync[F[_]](
 object GoogleSheetClientSync {
   def apply[F[_]: Sync](
       authenticator: GoogleAuthenticator
-  )(implicit timer: Timer[F]): GoogleSheetClientSync[F] =
+  )(implicit timer: Temporal[F]): GoogleSheetClientSync[F] =
     new GoogleSheetClientSync(authenticator, Retry.defaultPolicy, Retry.defaultOnError[F])
 }
