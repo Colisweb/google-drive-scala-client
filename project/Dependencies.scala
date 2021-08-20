@@ -5,13 +5,13 @@ object TestDependencies {
 }
 
 object Versions {
-  final val catsEffect        = "2.5.3"
-  final val catsRetry         = "2.1.1"
-  final val scalaCompat       = "2.5.0"
-  final val googleClient      = "1.32.1"
-  final val googleAuth        = "1.0.0"
-  final val googleSheets      = "v4-rev20210629-1.32.1"
-  final val googleDrive       = "v3-rev20210725-1.32.1"
+  final val catsEffect   = "2.5.3"
+  final val catsRetry    = "2.1.1"
+  final val scalaCompat  = "2.5.0"
+  final val googleClient = "1.32.1"
+  final val googleAuth   = "1.0.0"
+  final val googleSheets = "v4-rev20210629-1.32.1"
+  final val googleDrive  = "v3-rev20210725-1.32.1"
 }
 
 object Dependencies {

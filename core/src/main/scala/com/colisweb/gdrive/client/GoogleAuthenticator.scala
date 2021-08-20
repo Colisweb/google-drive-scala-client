@@ -11,8 +11,10 @@ import scala.jdk.CollectionConverters._
 
 /** Authenticates to Google API.
   *
-  * @param credentialsInputStream path to a JSON file in resources
-  * @param applicationName        registered name
+  * @param credentialsInputStream
+  *   path to a JSON file in resources
+  * @param applicationName
+  *   registered name
   */
 case class GoogleAuthenticator(credentialsInputStream: InputStream, applicationName: String) {
 

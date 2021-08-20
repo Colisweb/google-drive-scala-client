@@ -4,11 +4,11 @@ lazy val scala212               = "2.12.14"
 lazy val scala213               = "2.13.6"
 lazy val supportedScalaVersions = List(scala213, scala212)
 
-ThisBuild / organization := "com.colisweb"
-ThisBuild / scalaVersion := scala213
-ThisBuild / scalafmtOnCompile := true
-ThisBuild / scalafmtCheck := true
-ThisBuild / scalafmtSbtCheck := true
+ThisBuild / organization       := "com.colisweb"
+ThisBuild / scalaVersion       := scala213
+ThisBuild / scalafmtOnCompile  := true
+ThisBuild / scalafmtCheck      := true
+ThisBuild / scalafmtSbtCheck   := true
 ThisBuild / crossScalaVersions := supportedScalaVersions
 ThisBuild / scalacOptions ++= crossScalacOptions(scalaVersion.value)
 
@@ -18,7 +18,6 @@ ThisBuild / pushRemoteCacheTo := Some(
   MavenCache("local-cache", baseDirectory.value / sys.env.getOrElse("CACHE_PATH", "sbt-cache"))
 )
 ThisBuild / isSnapshot := true
-
 
 //// Main projects
 
@@ -36,10 +35,10 @@ lazy val core = Project(id = "google-drive-scala-client", base = file("core"))
       Dependencies.googleSheets,
       Dependencies.googleDrive
     ),
-    libraryDependencies += TestDependencies.scalaTest,
+    libraryDependencies += TestDependencies.scalaTest
   )
   .settings(
-    unusedCompileDependenciesFilter -= moduleFilter("org.scala-lang.modules","scala-collection-compat")
+    unusedCompileDependenciesFilter -= moduleFilter("org.scala-lang.modules", "scala-collection-compat")
   )
 
 lazy val cats_wrapper = Project(id = "google-drive-scala-client-cats", base = file("cats_wrapper"))
@@ -53,7 +52,7 @@ lazy val cats_wrapper = Project(id = "google-drive-scala-client-cats", base = fi
 
 def noPublishSettings =
   Seq(
-    publish := {},
-    publishLocal := {},
+    publish         := {},
+    publishLocal    := {},
     publishArtifact := false
   )
