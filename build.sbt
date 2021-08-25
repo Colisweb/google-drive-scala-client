@@ -24,7 +24,7 @@ ThisBuild / isSnapshot := true
 
 lazy val root = Project(id = "google-drive-scala", base = file("."))
   .settings(noPublishSettings: _*)
-  .aggregate(core, cats_wrapper)
+  .aggregate(core, cats_wrapper, zio_wrapper)
 
 lazy val core = Project(id = "google-drive-scala-client", base = file("core"))
   .settings(
@@ -47,6 +47,14 @@ lazy val cats_wrapper = Project(id = "google-drive-scala-client-cats", base = fi
     libraryDependencies ++= Seq(
       Dependencies.catsEffect,
       Dependencies.catsRetry
+    )
+  )
+  .dependsOn(core)
+
+lazy val zio_wrapper = Project(id = "google-drive-scala-client-zio", base = file("zio_wrapper"))
+  .settings(
+    libraryDependencies ++= Seq(
+      Dependencies.zio
     )
   )
   .dependsOn(core)
