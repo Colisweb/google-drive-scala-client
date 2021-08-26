@@ -17,7 +17,6 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 ThisBuild / pushRemoteCacheTo := Some(
   MavenCache("local-cache", baseDirectory.value / sys.env.getOrElse("CACHE_PATH", "sbt-cache"))
 )
-ThisBuild / isSnapshot := true
 
 
 //// Main projects
