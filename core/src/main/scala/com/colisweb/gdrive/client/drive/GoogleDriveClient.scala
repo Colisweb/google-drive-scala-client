@@ -1,6 +1,6 @@
 package com.colisweb.gdrive.client.drive
 
-import java.io.{File, InputStream}
+import com.colisweb.gdrive.client.GoogleUtilities._
 import com.colisweb.gdrive.client._
 import com.colisweb.gdrive.client.drive.GoogleDriveRole.GoogleDriveRole
 import com.google.api.client.http.FileContent
@@ -8,8 +8,8 @@ import com.google.api.services.drive.Drive
 import com.google.api.services.drive.model.{FileList, Permission, File => DriveFile}
 import com.google.auth.http.HttpCredentialsAdapter
 
+import java.io.{File, InputStream}
 import scala.annotation.tailrec
-import scala.jdk.CollectionConverters._
 
 class GoogleDriveClient(authenticator: GoogleAuthenticator) {
 
@@ -60,8 +60,7 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
       .setFields("files(id, name)")
       .execute()
       .getFiles
-      .asScala
-      .toList
+      .asScalaListNotNull
       .map { file =>
         val name = file.getName
         val id   = file.getId
@@ -117,7 +116,7 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
         .setFields("parents")
         .execute()
 
-    val previousParents = driveFile.getParents.asScala.mkString(",")
+    val previousParents = driveFile.getParents.asScalaListNotNull.mkString(",")
 
     val updatedFile =
       service
@@ -128,7 +127,7 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
         .setFields("id, parents")
         .execute()
 
-    updatedFile.getParents.asScala
+    updatedFile.getParents.asScalaListNotNull
       .mkString("") == parentId
   }
 
@@ -140,7 +139,7 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
         .setFields("id, parents")
         .execute()
         .getParents
-    ).map(_.asScala.toList).getOrElse(Nil)
+    ).map(_.asScalaListNotNull).getOrElse(Nil)
 
   @tailrec
   final def isInSubFolderOf(id: String, rootId: String): Boolean =
@@ -168,7 +167,7 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
     val mimeTypeQueryPart = maybeMimeType.fold("")(mimeType => s" and mimeType = '${GoogleMimeType.name(mimeType)}'")
     val query             = s"name contains '$keywords'" + mimeTypeQueryPart
 
-    listFiles(query).getFiles.asScala.toList
+    listFiles(query).getFiles.asScalaListNotNull
       .find(file => isInSubFolderOf(file.getId, rootId))
       .map(file => GoogleSearchResult(file.getId, file.getName))
   }

@@ -1,6 +1,7 @@
 package com.colisweb.zio.gdrive.client
 
 import com.colisweb.gdrive.client.GoogleAuthenticator
+import com.colisweb.gdrive.client.GoogleUtilities._
 import com.colisweb.gdrive.client.drive.GoogleDriveRole.GoogleDriveRole
 import com.colisweb.gdrive.client.drive.{GoogleDriveClient, GoogleMimeType, GoogleSearchResult}
 import com.google.api.services.drive.model.{FileList, Permission}
@@ -8,7 +9,6 @@ import zio.clock.Clock
 import zio.{RIO, Schedule, ZIO}
 
 import java.io.{File, InputStream}
-import scala.jdk.CollectionConverters._
 
 class GoogleDriveZClient(
     authenticator: GoogleAuthenticator,
@@ -101,7 +101,7 @@ class GoogleDriveZClient(
 
     listFiles(query)
       .flatMap { list =>
-        val files = list.getFiles.asScala.toList
+        val files = list.getFiles.asScalaListNotNull
 
         ZIO.foreach(files)(file => isInSubFolderOf(file.getId, rootId)).map { result =>
           (result zip files)
