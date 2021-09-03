@@ -15,4 +15,10 @@ object GoogleUtilities {
       }.asJava
     )
 
+  implicit class GoogleListData[A](data: java.util.List[A]) {
+    def asScalaListNotNull: List[A] = data match {
+      case null => Nil
+      case _    => data.asScala.toList
+    }
+  }
 }

@@ -1,6 +1,7 @@
 package com.colisweb.gdrive.client.sheets
 
 import com.colisweb.gdrive.client.GoogleAuthenticator
+import com.colisweb.gdrive.client.GoogleUtilities._
 import com.google.api.services.sheets.v4.Sheets
 import com.google.api.services.sheets.v4.model._
 import com.google.auth.http.HttpCredentialsAdapter
@@ -44,8 +45,7 @@ class GoogleSheetClient(authenticator: GoogleAuthenticator) {
       .getSheets
       .get(0)
       .getData
-      .asScala
-      .toList
+      .asScalaListNotNull
 
     // Removing headers' row
     parseFields(readGridDataAsStringAndTransposeToColumnFirst(sheetData).tail)
@@ -53,7 +53,7 @@ class GoogleSheetClient(authenticator: GoogleAuthenticator) {
 
   def readRows(id: String, range: String): Seq[RowData] = readRows(id, List(range)).flatten
 
-  def readRows(id: String, ranges: List[String]): Seq[Seq[RowData]] =
+  def readRows(id: String, ranges: List[String]): Seq[Seq[RowData]] = {
     service
       .spreadsheets()
       .get(id)
@@ -63,9 +63,9 @@ class GoogleSheetClient(authenticator: GoogleAuthenticator) {
       .getSheets
       .get(0)
       .getData
-      .asScala
-      .toList
-      .map(_.getRowData.asScala.toList)
+      .asScalaListNotNull
+      .map(_.getRowData.asScalaListNotNull)
+  }
 
   def writeRanges(
       id: String,
@@ -104,7 +104,7 @@ class GoogleSheetClient(authenticator: GoogleAuthenticator) {
       .get(id)
       .execute
       .getSheets
-      .asScala
+      .asScalaListNotNull
       .map { sheet =>
         val properties = sheet.getProperties
         properties.getTitle -> properties.getSheetId.toInt
@@ -112,13 +112,13 @@ class GoogleSheetClient(authenticator: GoogleAuthenticator) {
       .toMap
 
   private def readGridDataAsStringAndTransposeToColumnFirst(sheetData: List[GridData]): List[List[String]] = {
-    def rowIsNotEmpty: RowData => Boolean = _.getValues.asScala.forall(_.getEffectiveValue != null)
+    def rowIsNotEmpty: RowData => Boolean = _.getValues.asScalaListNotNull.forall(_.getEffectiveValue != null)
 
     sheetData.map { rangeData =>
-      val rows                  = rangeData.getRowData.asScala.toList
+      val rows                  = rangeData.getRowData.asScalaListNotNull
       val rowsWithoutEmptyCells = rows.filter(rowIsNotEmpty)
 
-      rowsWithoutEmptyCells.flatMap(_.getValues.asScala.toList.map(_.getFormattedValue))
+      rowsWithoutEmptyCells.flatMap(_.getValues.asScalaListNotNull.map(_.getFormattedValue))
     }.transpose
   }
 

@@ -1,15 +1,15 @@
 package com.colisweb.cats.gdrive.client
 
-import java.io.{File, InputStream}
 import cats.effect.{Sync, Timer}
 import cats.implicits._
 import com.colisweb.gdrive.client.GoogleAuthenticator
+import com.colisweb.gdrive.client.GoogleUtilities._
 import com.colisweb.gdrive.client.drive.GoogleDriveRole.GoogleDriveRole
 import com.colisweb.gdrive.client.drive.{GoogleDriveClient, GoogleMimeType, GoogleSearchResult}
 import com.google.api.services.drive.model.{FileList, Permission}
 import retry._
 
-import scala.jdk.CollectionConverters._
+import java.io.{File, InputStream}
 
 class GoogleDriveClientSync[F[_]](
     authenticator: GoogleAuthenticator,
@@ -106,7 +106,7 @@ class GoogleDriveClientSync[F[_]](
 
     listFiles(query)
       .flatMap { list =>
-        val files = list.getFiles.asScala.toList
+        val files = list.getFiles.asScalaListNotNull
 
         files.traverse(file => isInSubFolderOf(file.getId, rootId)).map { result =>
           (result zip files)
