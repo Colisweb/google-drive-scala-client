@@ -111,6 +111,15 @@ class GoogleSheetClient(authenticator: GoogleAuthenticator) {
       }
       .toMap
 
+  def retrieveSheetsProperties(id: String): List[SheetProperties] =
+    service
+      .spreadsheets()
+      .get(id)
+      .execute
+      .getSheets
+      .asScalaListNotNull
+      .map(_.getProperties)
+
   private def readGridDataAsStringAndTransposeToColumnFirst(sheetData: List[GridData]): List[List[String]] = {
     def rowIsNotEmpty: RowData => Boolean = _.getValues.asScalaListNotNull.forall(_.getEffectiveValue != null)
 

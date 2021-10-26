@@ -64,6 +64,11 @@ class GoogleSheetClientSync[F[_]](
       client.retrieveSheetsIds(id)
     )
 
+  def retrieveSheetsProperties(id: String): F[Map[String, Int]] =
+    retry(
+      client.retrieveSheetsProperties(id)
+    )
+
   def batchRequests(spreadsheetId: String, requests: List[GoogleBatchRequest]): F[Unit] =
     retry(
       client.batchRequests(spreadsheetId, requests)
