@@ -12,7 +12,7 @@ object Versions {
   final val googleAuth   = "1.2.2"
   final val googleSheets = "v4-rev20210629-1.32.1"
   final val googleDrive  = "v3-rev20211017-1.32.1"
-  final val zio          = "1.0.11"
+  final val zio          = "1.0.12"
 }
 
 object Dependencies {
