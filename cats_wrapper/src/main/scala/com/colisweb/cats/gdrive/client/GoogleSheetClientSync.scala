@@ -11,7 +11,7 @@ import com.colisweb.gdrive.client.sheets.{
   InputOptionRaw,
   SheetRangeContent
 }
-import com.google.api.services.sheets.v4.model.RowData
+import com.google.api.services.sheets.v4.model.{RowData, SheetProperties}
 import retry.{RetryDetails, RetryPolicy}
 
 class GoogleSheetClientSync[F[_]](
@@ -62,6 +62,11 @@ class GoogleSheetClientSync[F[_]](
   def retrieveSheetsIds(id: String): F[Map[String, Int]] =
     retry(
       client.retrieveSheetsIds(id)
+    )
+
+  def retrieveSheetsProperties(id: String): F[List[SheetProperties]] =
+    retry(
+      client.retrieveSheetsProperties(id)
     )
 
   def batchRequests(spreadsheetId: String, requests: List[GoogleBatchRequest]): F[Unit] =
