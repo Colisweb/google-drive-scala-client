@@ -52,7 +52,8 @@ class BigQueryTableSync[F[_], T](
 
   def updateRows(data: List[T], map: Map[String, T => String], conditions: List[WhereCondition]): F[Unit] =
     data.traverse { row =>
-      val query = updateRowQuery(map.view.mapValues(_(row)).toMap, conditions)
+      val toUpdate = map.toList.map { case (k, v) => (k, v(row)) }.toMap
+      val query    = updateRowQuery(toUpdate, conditions)
       executeQuery(query, "updateJob")
     }.void
 

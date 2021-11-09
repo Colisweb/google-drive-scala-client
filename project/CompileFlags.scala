@@ -55,8 +55,7 @@ object CompileFlags {
   val flags213 = Seq(
     "-Xlint:adapted-args", // Warn if an argument list is modified to match the receiver.
     "-Xlint:inaccessible",
-    "-Xlint:infer-any",
-    "-Xlint:nullary-override"
+    "-Xlint:infer-any"
   )
 
   def crossScalacOptions(version: String): Seq[String] =
