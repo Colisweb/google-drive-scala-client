@@ -1,0 +1,11 @@
+List(
+  ("field1", "INT64", "NULLABLE", List()),
+  ("date", "DATE", "NULLABLE", List()),
+  ("timestamp", "TIMESTAMP", "NULLABLE", List()),
+  (
+    "subfields",
+    "STRUCT",
+    "REPEATED",
+    List(("string", "STRING", "NULLABLE", List()), ("date_time", "DATETIME", "NULLABLE", List()))
+  )
+)

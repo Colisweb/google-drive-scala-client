@@ -2,17 +2,15 @@ package com.colisweb.gdrive.client
 
 import com.github.writethemfirst.Approbation
 import com.google.cloud.bigquery.{Field, Schema}
+import org.scalatest.flatspec.FixtureAnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.FixtureAnyWordSpec
 
 import scala.jdk.CollectionConverters._
 
-final class BigQuerySchemaTest extends FixtureAnyWordSpec with Approbation with Matchers {
+final class BigQuerySchemaTest extends FixtureAnyFlatSpec with Approbation with Matchers {
 
-  "BigQuery schema" should {
-    "be valid" in { approver =>
-      approver.verify(prettify(getFields(Sample.schema)))
-    }
+  "BigQuery schema" should "be valid" in { approver =>
+    approver.verify(prettify(getFields(Sample.schema)))
   }
 
   private def getFields(schema: Schema): List[(String, String, String, Any)] =
