@@ -11,16 +11,12 @@ final class BigQueryTableTest extends AnyWordSpec with Matchers {
 
   "BigQueryTable" should {
     "identify which fields are different between two schemas" in {
-      val schema               = Sample.schema
-      val otherFields          = schema.getFields.asScala.toList
-      val expectedAddedField   = Field.of("new_field", StandardSQLTypeName.BOOL)
-      val expectedRemovedField = otherFields.head
-      val otherSchema          = Schema.of((expectedAddedField :: otherFields.tail).asJava)
+      val schema             = Sample.schema
+      val otherFields        = schema.getFields.asScala.toList
+      val expectedAddedField = Field.of("new_field", StandardSQLTypeName.BOOL)
+      val otherSchema        = Schema.of((expectedAddedField :: otherFields.tail).asJava)
 
-      val (removed, added) = BigQueryTable.fieldsDiff(schema, otherSchema)
-
-      removed shouldBe List(expectedRemovedField)
-      added shouldBe List(expectedAddedField)
+      BigQueryTable.sameSchemas(schema, otherSchema) should be(false)
     }
   }
 }

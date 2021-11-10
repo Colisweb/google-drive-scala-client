@@ -7,9 +7,9 @@ import org.scalatest.matchers.should.Matchers
 
 import scala.jdk.CollectionConverters._
 
-final class BigQuerySchemaTest extends FixtureAnyFlatSpec with Approbation with Matchers {
+final class BigQuerySchemaTest extends FixtureAnyFlatSpec with Matchers with Approbation {
 
-  "BigQuery schema" should "be valid" in { approver =>
+  it should "return the correct BigQuery schema" in { approver =>
     approver.verify(prettify(getFields(Sample.schema)))
   }
 

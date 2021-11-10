@@ -20,22 +20,15 @@ class BigQueryTable[T](
     schema: Schema
 )(implicit encoder: Encoder[T]) {
 
-  private val bigQuery = BigQueryOptions
+  val bigQueryService: BigQuery = BigQueryOptions
     .newBuilder()
     .setCredentials(authenticator.credentials)
     .setProjectId(projectId)
     .build()
     .getService
 
-  implicit val doubleEncoder: Encoder[Double] = Encoder.encodeDouble.contramap { double =>
-    if (double.isNaN || double.isInfinite)
-      double
-    else
-      BigDecimal(double).setScale(9, BigDecimal.RoundingMode.HALF_UP).toDouble
-  }
-
   val tableId: TableId          = TableId.of(datasetName, tableName)
-  lazy val storedTable: Table   = bigQuery.getTable(tableId)
+  lazy val storedTable: Table   = bigQueryService.getTable(tableId)
   lazy val storedSchema: Schema = storedTable.getDefinition[TableDefinition].getSchema
 
   def appendRows(data: List[T], allowSchemaUpdate: Boolean): Try[Job] = {
@@ -43,12 +36,14 @@ class BigQueryTable[T](
     uploadData(data)
   }
 
-  def updateRows(data: List[T], map: Map[String, T => String], conditions: List[WhereCondition]): Unit =
-    data.foreach { row =>
-      val toUpdate = map.toList.map { case (k, v) => (k, v(row)) }.toMap
-      val query    = updateRowQuery(toUpdate, conditions)
-      executeQuery(query, "updateJob")
-    }
+  def updateRows(data: List[T], fieldsToUpdate: Map[String, T => String], conditions: List[WhereCondition]): Unit =
+    data.foreach(updateRow(fieldsToUpdate, conditions))
+
+  def updateRow(fieldsToUpdate: Map[String, T => String], conditions: List[WhereCondition])(row: T): TableResult = {
+    val toUpdate = fieldsToUpdate.toList.map { case (colName, value) => (colName, value(row)) }.toMap
+    val query    = updateRowQuery(toUpdate, conditions)
+    executeQuery(query, "updateJob")
+  }
 
   def deleteRows(conditions: List[WhereCondition]): TableResult = {
     val where = conditions.map(_.sql).mkString(" and ")
@@ -59,15 +54,13 @@ class BigQueryTable[T](
   def executeQuery(query: String, jobPrefix: String): TableResult = {
     val queryJobConfig = QueryJobConfiguration.newBuilder(query).build()
     val jobId          = JobId.newBuilder().setJob(s"${jobPrefix}_${UUID.randomUUID.toString}").build()
-    val result         = bigQuery.query(queryJobConfig, jobId)
+    val result         = bigQueryService.query(queryJobConfig, jobId)
     waitForJob(jobId)
     result
   }
 
   def maybeUpdateSchema(): Unit = {
-    val (removedFields, addedFields) = BigQueryTable.fieldsDiff(storedSchema, schema)
-
-    if (removedFields.nonEmpty || addedFields.nonEmpty)
+    if (!sameSchemas(storedSchema, schema))
       storedTable.toBuilder.setDefinition(StandardTableDefinition.of(schema)).build().update()
 
     ()
@@ -78,14 +71,17 @@ class BigQueryTable[T](
       .iterateAll()
       .asScala
 
-  // TODO: update fields with numeric values
-  private def updateRowQuery(toUpdate: Map[String, String], conditions: List[WhereCondition]): String = {
+  def waitForJob(jobId: JobId): Try[Job] =
+    Try(bigQueryService.getJob(jobId).waitFor())
+
+  // TODO: change fieldsToUpdate to be able to update fields with numeric values (here we only update with strings)
+  def updateRowQuery(fieldsToUpdate: Map[String, String], conditions: List[WhereCondition]): String = {
     val where = conditions.map(_.sql).mkString(" and ")
-    val set   = toUpdate.map { case (k, v) => s"$k = '$v'" }.mkString(", ")
+    val set   = fieldsToUpdate.map { case (col, value) => s"$col = '$value'" }.mkString(", ")
     s"update `$datasetName.$tableName` set $set where $where"
   }
 
-  private def uploadData(data: List[T]): Try[Job] = {
+  def uploadData(data: List[T]): Try[Job] = {
     val writeJobConfig =
       WriteChannelConfiguration
         .newBuilder(tableId)
@@ -94,16 +90,20 @@ class BigQueryTable[T](
         .build()
 
     val jobId  = JobId.newBuilder().setJob(s"appendJob_${UUID.randomUUID.toString}").build()
-    val writer = bigQuery.writer(jobId, writeJobConfig)
+    val writer = bigQueryService.writer(jobId, writeJobConfig)
     data.foreach(d => writer.write(ByteBuffer.wrap(s"${d.asJson.noSpaces}\n".getBytes(Charsets.UTF_8))))
     waitForJob(jobId)
   }
-
-  private def waitForJob(jobId: JobId): Try[Job] =
-    Try(bigQuery.getJob(jobId).waitFor())
 }
 
 object BigQueryTable {
+  implicit val doubleEncoder: Encoder[Double] = Encoder.encodeDouble.contramap { double =>
+    if (double.isNaN || double.isInfinite)
+      double
+    else
+      BigDecimal(double).setScale(9, BigDecimal.RoundingMode.HALF_UP).toDouble
+  }
+
   sealed trait WhereCondition {
     def sql: String
   }
@@ -120,10 +120,6 @@ object BigQueryTable {
     def sql: String = s"$columnName in (${values.map(v => s"'$v''").mkString(", ")})"
   }
 
-  def fieldsDiff(left: Schema, right: Schema): (List[Field], List[Field]) = {
-    val leftFields  = left.getFields.asScala.toList
-    val rightFields = right.getFields.asScala.toList
-
-    (leftFields diff rightFields, rightFields diff leftFields)
-  }
+  def sameSchemas(left: Schema, right: Schema): Boolean =
+    left.getFields.asScala.toSet == right.getFields.asScala.toSet
 }
