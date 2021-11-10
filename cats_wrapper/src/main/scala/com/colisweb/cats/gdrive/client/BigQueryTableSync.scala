@@ -30,7 +30,7 @@ class BigQueryTableSync[F[_], T](
 
   def appendRows(data: List[T], allowSchemaUpdate: Boolean): F[Unit] =
     (
-      F.ifM(F.pure(allowSchemaUpdate))(maybeUpdateSchema(), F.unit)
+      F.whenA(allowSchemaUpdate)(maybeUpdateSchema())
         *> uploadData(data)
     )
 
