@@ -29,10 +29,10 @@ class BigQueryTableSync[F[_], T](
   private val bigQueryTable = new BigQueryTable(authenticator, projectId, datasetName, tableName, schema)(encoder)
 
   def appendRows(data: List[T], allowSchemaUpdate: Boolean): F[Unit] =
-    for {
-      _ <- if (allowSchemaUpdate) maybeUpdateSchema() else F.unit
-      _ <- uploadData(data)
-    } yield ()
+    (
+      F.ifM(F.pure(allowSchemaUpdate))(maybeUpdateSchema(), F.unit)
+        *> uploadData(data)
+    )
 
   def updateRows(data: List[T], fieldsToUpdate: Map[String, T => String], conditions: List[WhereCondition]): F[Unit] =
     data.traverse(row => retry(bigQueryTable.updateRow(fieldsToUpdate, conditions)(row))).void

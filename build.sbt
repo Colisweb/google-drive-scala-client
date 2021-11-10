@@ -9,6 +9,7 @@ ThisBuild / scalaVersion       := scala213
 ThisBuild / scalafmtOnCompile  := true
 ThisBuild / scalafmtCheck      := true
 ThisBuild / scalafmtSbtCheck   := true
+ThisBuild / Test / fork        := true
 ThisBuild / crossScalaVersions := supportedScalaVersions
 ThisBuild / scalacOptions ++= crossScalacOptions(scalaVersion.value)
 
