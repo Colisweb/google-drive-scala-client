@@ -15,7 +15,7 @@ import java.nio.ByteBuffer
 import java.util.UUID
 import scala.util.Try
 
-class BigQueryTableSync[F[_], T](
+class BigQueryTableRetry[F[_], T](
     authenticator: GoogleAuthenticator,
     projectId: String,
     datasetName: String,

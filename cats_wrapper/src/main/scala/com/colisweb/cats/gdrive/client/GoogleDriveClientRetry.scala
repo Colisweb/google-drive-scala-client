@@ -11,7 +11,7 @@ import retry._
 
 import java.io.{File, InputStream}
 
-class GoogleDriveClientSync[F[_]](
+class GoogleDriveClientRetry[F[_]](
     authenticator: GoogleAuthenticator,
     retryPolicy: RetryPolicy[F],
     onError: (Throwable, RetryDetails) => F[Unit]
@@ -122,10 +122,10 @@ class GoogleDriveClientSync[F[_]](
     )
 }
 
-object GoogleDriveClientSync {
+object GoogleDriveClientRetry {
 
   def apply[F[_]: Sync](
       authenticator: GoogleAuthenticator
-  )(implicit timer: Timer[F]): GoogleDriveClientSync[F] =
-    new GoogleDriveClientSync(authenticator, Retry.defaultPolicy[F], Retry.defaultOnError[F])
+  )(implicit timer: Timer[F]): GoogleDriveClientRetry[F] =
+    new GoogleDriveClientRetry(authenticator, Retry.defaultPolicy[F], Retry.defaultOnError[F])
 }
