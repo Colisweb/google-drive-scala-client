@@ -52,7 +52,7 @@ class BigQueryTableSync[F[_], T](
   def waitForJob(jobId: JobId): F[Try[Job]] =
     retry(bigQueryTable.waitForJob(jobId))
 
-  private def uploadData(data: List[T]): F[Unit] = {
+  def uploadData(data: List[T]): F[Unit] = {
     val writeJobConfig =
       WriteChannelConfiguration
         .newBuilder(TableId.of(datasetName, tableName))

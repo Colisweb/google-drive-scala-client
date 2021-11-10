@@ -54,7 +54,7 @@ class BigQueryTableZ[T](
   private def waitForJob(jobId: JobId): RIO[Clock, Try[Job]] =
     retry(bigQueryTable.waitForJob(jobId))
 
-  private def uploadData(data: List[T]): RIO[Clock, Unit] = {
+  def uploadData(data: List[T]): RIO[Clock, Unit] = {
     val writeJobConfig =
       WriteChannelConfiguration
         .newBuilder(TableId.of(datasetName, tableName))
