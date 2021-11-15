@@ -9,6 +9,7 @@ ThisBuild / scalaVersion       := scala213
 ThisBuild / scalafmtOnCompile  := true
 ThisBuild / scalafmtCheck      := true
 ThisBuild / scalafmtSbtCheck   := true
+ThisBuild / Test / fork        := true
 ThisBuild / crossScalaVersions := supportedScalaVersions
 ThisBuild / scalacOptions ++= crossScalacOptions(scalaVersion.value)
 
@@ -27,14 +28,20 @@ lazy val root = Project(id = "google-drive-scala", base = file("."))
 lazy val core = Project(id = "google-drive-scala-client", base = file("core"))
   .settings(
     libraryDependencies ++= Seq(
+      Dependencies.circe,
       Dependencies.scalaCompat,
+      Dependencies.scalaReflect,
       Dependencies.googleClient,
       Dependencies.googleAuth,
       Dependencies.googleCredentials,
       Dependencies.googleSheets,
-      Dependencies.googleDrive
+      Dependencies.googleDrive,
+      Dependencies.googleBigQuery
     ),
-    libraryDependencies += TestDependencies.scalaTest
+    libraryDependencies ++= Seq(
+      TestDependencies.scalaTest,
+      TestDependencies.approvals
+    )
   )
   .settings(
     unusedCompileDependenciesFilter -= moduleFilter("org.scala-lang.modules", "scala-collection-compat")
