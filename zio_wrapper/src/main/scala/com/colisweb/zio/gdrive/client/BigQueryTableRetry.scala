@@ -14,7 +14,7 @@ import java.nio.ByteBuffer
 import java.util.UUID
 import scala.util.Try
 
-class BigQueryTableZ[T](
+class BigQueryTableRetry[T](
     authenticator: GoogleAuthenticator,
     projectId: String,
     datasetName: String,

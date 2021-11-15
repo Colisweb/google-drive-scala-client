@@ -10,7 +10,7 @@ import zio.{RIO, Schedule, ZIO}
 
 import java.io.{File, InputStream}
 
-class GoogleDriveZClient(
+class GoogleDriveClientRetry(
     authenticator: GoogleAuthenticator,
     retryPolicy: Schedule[Any, Throwable, Any] = RetryPolicies.default
 ) {

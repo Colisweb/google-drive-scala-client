@@ -6,7 +6,7 @@ import com.google.api.services.sheets.v4.model.{RowData, SheetProperties}
 import zio.clock.Clock
 import zio.{RIO, Schedule}
 
-class GoogleSheetZClient(
+class GoogleSheetClientRetry(
     authenticator: GoogleAuthenticator,
     retryPolicy: Schedule[Any, Throwable, Any] = RetryPolicies.default
 ) {
