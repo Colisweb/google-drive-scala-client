@@ -20,7 +20,8 @@ case class GoogleAuthenticator(credentialsInputStream: InputStream, applicationN
 
   lazy val jsonFactory: GsonFactory        = GsonFactory.getDefaultInstance
   lazy val httpTransport: NetHttpTransport = GoogleNetHttpTransport.newTrustedTransport()
-  private val scopes                       = List(SheetsScopes.DRIVE)
+  private val bigQueryScope                = "https://www.googleapis.com/auth/bigquery"
+  private val scopes                       = List(SheetsScopes.DRIVE, bigQueryScope)
 
   lazy val credentials: GoogleCredentials =
     GoogleCredentials
