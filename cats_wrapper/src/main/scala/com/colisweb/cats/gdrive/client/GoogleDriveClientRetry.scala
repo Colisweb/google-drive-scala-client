@@ -7,7 +7,7 @@ import com.colisweb.gdrive.client.GoogleUtilities._
 import com.colisweb.gdrive.client.drive.GoogleDriveRole.GoogleDriveRole
 import com.colisweb.gdrive.client.drive.{GoogleDriveClient, GoogleMimeType, GoogleSearchResult}
 import com.google.api.services.drive.model.{FileList, Permission}
-import retry._
+import retry.{RetryDetails, RetryPolicy}
 
 import java.io.{File, InputStream}
 
@@ -73,28 +73,6 @@ class GoogleDriveClientRetry[F[_]](
       client.share(fileId, email, role)
     )
 
-  def getParents(id: String): F[List[String]] =
-    retry(
-      client.getParents(id)
-    )
-
-  def listFiles(query: String): F[FileList] =
-    retry(
-      client.listFiles(query)
-    )
-
-  def isInSubFolderOf(id: String, rootId: String): F[Boolean] = {
-
-    def step(currentId: String): F[Either[String, Boolean]] =
-      getParents(currentId).map {
-        case Nil                                 => Right(false)
-        case parents if parents.contains(rootId) => Right(true)
-        case next :: _                           => Left(next)
-      }
-
-    id.tailRecM(step)
-  }
-
   def findFileInSubFolderOf(
       keywords: String,
       rootId: String,
@@ -115,6 +93,28 @@ class GoogleDriveClientRetry[F[_]](
         }
       }
   }
+
+  def listFiles(query: String): F[FileList] =
+    retry(
+      client.listFiles(query)
+    )
+
+  def isInSubFolderOf(id: String, rootId: String): F[Boolean] = {
+
+    def step(currentId: String): F[Either[String, Boolean]] =
+      getParents(currentId).map {
+        case Nil                                 => Right(false)
+        case parents if parents.contains(rootId) => Right(true)
+        case next :: _                           => Left(next)
+      }
+
+    id.tailRecM(step)
+  }
+
+  def getParents(id: String): F[List[String]] =
+    retry(
+      client.getParents(id)
+    )
 
   def downloadAsInputStream(fileId: String): F[InputStream] =
     retry(
