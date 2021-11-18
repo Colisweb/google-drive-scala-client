@@ -7,6 +7,7 @@ import com.google.api.services.sheets.v4.model._
 import com.google.auth.http.HttpCredentialsAdapter
 
 import scala.jdk.CollectionConverters._
+import scala.util.chaining._
 
 class GoogleSheetClient(authenticator: GoogleAuthenticator) {
 
@@ -15,7 +16,7 @@ class GoogleSheetClient(authenticator: GoogleAuthenticator) {
       authenticator.httpTransport,
       authenticator.jsonFactory,
       new HttpCredentialsAdapter(authenticator.credentials)
-    ).setApplicationName(authenticator.applicationName)
+    ).pipe(builder => authenticator.applicationName.fold(builder)(builder.setApplicationName))
       .build()
 
   def createSpreadsheet(name: String, sheetProperties: List[GoogleSheetProperties]): String = {

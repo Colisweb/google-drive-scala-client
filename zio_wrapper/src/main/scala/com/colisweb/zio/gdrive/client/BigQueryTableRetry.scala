@@ -1,8 +1,8 @@
 package com.colisweb.zio.gdrive.client
 
-import com.colisweb.gdrive.client.GoogleAuthenticator
 import com.colisweb.gdrive.client.bigquery.BigQueryTable
 import com.colisweb.gdrive.client.bigquery.BigQueryTable._
+import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.bigquery.{Option => _, _}
 import com.google.common.base.Charsets
 import io.circe.Encoder
@@ -15,7 +15,7 @@ import java.util.UUID
 import scala.util.Try
 
 class BigQueryTableRetry[T](
-    authenticator: GoogleAuthenticator,
+    credentials: GoogleCredentials,
     projectId: String,
     datasetName: String,
     tableName: String,
@@ -23,7 +23,7 @@ class BigQueryTableRetry[T](
     retryPolicy: Schedule[Any, Throwable, Any] = RetryPolicies.default
 )(implicit encoder: Encoder[T]) {
 
-  private val bigQueryTable = new BigQueryTable(authenticator, projectId, datasetName, tableName, schema)(encoder)
+  private val bigQueryTable = new BigQueryTable(credentials, projectId, datasetName, tableName, schema)(encoder)
   private val retry         = new Retry(retryPolicy)
 
   def appendRows(data: List[T], allowSchemaUpdate: Boolean): RIO[Clock, Unit] =

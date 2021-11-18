@@ -1,7 +1,7 @@
 package com.colisweb.gdrive.client.bigquery
 
-import com.colisweb.gdrive.client.GoogleAuthenticator
 import com.colisweb.gdrive.client.bigquery.BigQueryTable._
+import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.bigquery._
 import com.google.common.base.Charsets
 import io.circe.Encoder
@@ -13,7 +13,7 @@ import scala.jdk.CollectionConverters._
 import scala.util.Try
 
 class BigQueryTable[T](
-    authenticator: GoogleAuthenticator,
+    credentials: GoogleCredentials,
     projectId: String,
     datasetName: String,
     tableName: String,
@@ -22,7 +22,7 @@ class BigQueryTable[T](
 
   val bigQueryService: BigQuery = BigQueryOptions
     .newBuilder()
-    .setCredentials(authenticator.credentials)
+    .setCredentials(credentials)
     .setProjectId(projectId)
     .build()
     .getService

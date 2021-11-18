@@ -17,7 +17,7 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
 
   it should "test write to and read from a google spreadsheet" in {
 
-    val authenticator = GoogleAuthenticator.fromResource("google-credentials.json", "RoutingAnalysis")
+    val authenticator = GoogleAuthenticator.fromResource("google-credentials.json", Some("RoutingAnalysis"))
     val drive         = new GoogleDriveClient(authenticator)
     val sheets        = new GoogleSheetClient(authenticator)
 
@@ -45,7 +45,7 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
 
   it should "test writing with a range containing only the starting cell" in {
 
-    val authenticator = GoogleAuthenticator.fromResource("google-credentials.json", "RoutingAnalysis")
+    val authenticator = GoogleAuthenticator.fromResource("google-credentials.json", Some("RoutingAnalysis"))
     val drive         = new GoogleDriveClient(authenticator)
     val sheets        = new GoogleSheetClient(authenticator)
 
@@ -72,7 +72,7 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
   }
 
   it should "test writing in an invalid sheet name" in {
-    val authenticator = GoogleAuthenticator.fromResource("google-credentials.json", "RoutingAnalysis")
+    val authenticator = GoogleAuthenticator.fromResource("google-credentials.json", Some("RoutingAnalysis"))
     val drive         = new GoogleDriveClient(authenticator)
     val sheets        = new GoogleSheetClient(authenticator)
 
@@ -91,7 +91,7 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
   }
 
   it should "test writing with an inverted range" in {
-    val authenticator = GoogleAuthenticator.fromResource("google-credentials.json", "RoutingAnalysis")
+    val authenticator = GoogleAuthenticator.fromResource("google-credentials.json", Some("RoutingAnalysis"))
     val drive         = new GoogleDriveClient(authenticator)
     val sheets        = new GoogleSheetClient(authenticator)
 
