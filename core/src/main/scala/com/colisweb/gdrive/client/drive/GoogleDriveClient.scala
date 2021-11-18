@@ -10,6 +10,7 @@ import com.google.auth.http.HttpCredentialsAdapter
 
 import java.io.{File, InputStream}
 import scala.annotation.tailrec
+import scala.util.chaining._
 
 class GoogleDriveClient(authenticator: GoogleAuthenticator) {
 
@@ -18,7 +19,7 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
       authenticator.httpTransport,
       authenticator.jsonFactory,
       new HttpCredentialsAdapter(authenticator.credentials)
-    ).setApplicationName(authenticator.applicationName)
+    ).pipe(builder => authenticator.applicationName.fold(builder)(builder.setApplicationName))
       .build()
 
   def uploadFileTo(

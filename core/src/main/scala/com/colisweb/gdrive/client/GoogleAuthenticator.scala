@@ -16,12 +16,14 @@ import scala.jdk.CollectionConverters._
   * @param applicationName
   *   registered name
   */
-case class GoogleAuthenticator(credentialsInputStream: InputStream, applicationName: String) {
+case class GoogleAuthenticator(
+    credentialsInputStream: InputStream,
+    applicationName: Option[String] = None,
+    scopes: List[String] = GoogleAuthenticator.defaultScopes
+) {
 
   lazy val jsonFactory: GsonFactory        = GsonFactory.getDefaultInstance
   lazy val httpTransport: NetHttpTransport = GoogleNetHttpTransport.newTrustedTransport()
-  private val bigQueryScope                = "https://www.googleapis.com/auth/bigquery"
-  private val scopes                       = List(SheetsScopes.DRIVE, bigQueryScope)
 
   lazy val credentials: GoogleCredentials =
     GoogleCredentials
@@ -30,14 +32,17 @@ case class GoogleAuthenticator(credentialsInputStream: InputStream, applicationN
 }
 
 object GoogleAuthenticator {
+  val bigQueryScope = "https://www.googleapis.com/auth/bigquery"
+  val driveScope    = SheetsScopes.DRIVE
+  val defaultScopes = List(driveScope, bigQueryScope)
 
-  def fromFile(path: String, applicationName: String): GoogleAuthenticator =
+  def fromFile(path: String, applicationName: Option[String] = None): GoogleAuthenticator =
     GoogleAuthenticator(
       credentialsInputStream = new FileInputStream(path),
       applicationName = applicationName
     )
 
-  def fromResource(path: String, applicationName: String): GoogleAuthenticator =
+  def fromResource(path: String, applicationName: Option[String] = None): GoogleAuthenticator =
     GoogleAuthenticator(
       credentialsInputStream = getClass.getClassLoader.getResourceAsStream(path),
       applicationName = applicationName
