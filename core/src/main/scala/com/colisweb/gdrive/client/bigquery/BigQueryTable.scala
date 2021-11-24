@@ -89,9 +89,11 @@ class BigQueryTable[T](
         .setSchema(schema)
         .build()
 
-    val jobId  = JobId.newBuilder().setJob(s"appendJob_${UUID.randomUUID.toString}").build()
+    val jobId  = JobId.newBuilder().setJob(s"appendJob_${UUID.randomUUID.toString}").setLocation("EU").build()
     val writer = bigQueryService.writer(jobId, writeJobConfig)
+
     data.foreach(d => writer.write(ByteBuffer.wrap(s"${d.asJson.noSpaces}\n".getBytes(Charsets.UTF_8))))
+    writer.close()
     waitForJob(jobId)
   }
 }
@@ -117,7 +119,7 @@ object BigQueryTable {
   }
 
   final case class WhereConditionList(columnName: String, values: List[String]) extends WhereCondition {
-    def sql: String = s"$columnName in (${values.map(v => s"'$v''").mkString(", ")})"
+    def sql: String = s"$columnName in (${values.map(v => s"'$v'").mkString(", ")})"
   }
 
   def sameSchemas(left: Schema, right: Schema): Boolean =
