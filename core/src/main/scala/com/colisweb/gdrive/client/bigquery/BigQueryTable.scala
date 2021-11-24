@@ -89,7 +89,7 @@ class BigQueryTable[T](
         .setSchema(schema)
         .build()
 
-    val jobId  = JobId.newBuilder().setJob(s"appendJob_${UUID.randomUUID.toString}").setLocation("EU").build()
+    val jobId  = JobId.newBuilder().setJob(s"appendJob_${UUID.randomUUID.toString}").build()
     val writer = bigQueryService.writer(jobId, writeJobConfig)
 
     data.foreach(d => writer.write(ByteBuffer.wrap(s"${d.asJson.noSpaces}\n".getBytes(Charsets.UTF_8))))
