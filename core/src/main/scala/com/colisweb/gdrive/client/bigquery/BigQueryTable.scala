@@ -2,7 +2,7 @@ package com.colisweb.gdrive.client.bigquery
 
 import com.colisweb.gdrive.client.bigquery.BigQueryTable._
 import com.google.auth.oauth2.GoogleCredentials
-import com.google.cloud.bigquery._
+import com.google.cloud.bigquery.{Option => _, _}
 import com.google.common.base.Charsets
 import io.circe.Encoder
 import io.circe.syntax._
@@ -27,9 +27,9 @@ class BigQueryTable[T](
     .build()
     .getService
 
-  val tableId: TableId          = TableId.of(datasetName, tableName)
-  lazy val storedTable: Table   = bigQueryService.getTable(tableId)
-  lazy val storedSchema: Schema = storedTable.getDefinition[TableDefinition].getSchema
+  val tableId: TableId                  = TableId.of(datasetName, tableName)
+  lazy val storedTable: Option[Table]   = Option(bigQueryService.getTable(tableId))
+  lazy val storedSchema: Option[Schema] = storedTable.map(_.getDefinition[TableDefinition].getSchema)
 
   def appendRows(data: List[T], allowSchemaUpdate: Boolean): Try[Job] = {
     if (allowSchemaUpdate) maybeUpdateSchema() else ()
@@ -59,12 +59,15 @@ class BigQueryTable[T](
     result
   }
 
-  def maybeUpdateSchema(): Unit = {
-    if (!sameSchemas(storedSchema, schema))
-      storedTable.toBuilder.setDefinition(StandardTableDefinition.of(schema)).build().update()
+  def maybeUpdateSchema(): Unit =
+    (storedTable, storedSchema) match {
+      case (Some(remoteTable), Some(remoteSchema)) if !sameSchemas(remoteSchema, schema) =>
+        remoteTable.toBuilder.setDefinition(StandardTableDefinition.of(schema)).build().update()
+        ()
 
-    ()
-  }
+      case (_, _) =>
+        ()
+    }
 
   def getAllRows: Iterable[FieldValueList] =
     executeQuery(s"select * from `$datasetName.$tableName`", "get_all_rows")
