@@ -26,9 +26,11 @@ class BigQueryTableRetry[F[_], T](
 )(implicit F: Sync[F], timer: Timer[F], encoder: Encoder[T])
     extends Retry[F](retryPolicy, onError) {
 
-  private val bigQueryTable = new BigQueryTable(authenticator.credentials, projectId, datasetName, tableName, schema)(
-    encoder
-  )
+  private val bigQueryTable =
+    new BigQueryTable(authenticator.credentials, projectId, datasetName, tableName, schema)(encoder)
+
+  lazy val storedTable: F[Option[Table]]   = retry(bigQueryTable.storedTable)
+  lazy val storedSchema: F[Option[Schema]] = retry(bigQueryTable.storedSchema)
 
   def appendRows(data: List[T], allowSchemaUpdate: Boolean): F[Unit] =
     F.whenA(allowSchemaUpdate)(maybeUpdateSchema()) *> uploadData(data)
