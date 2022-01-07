@@ -16,7 +16,7 @@ object Versions {
   final val circe          = "0.14.1"
   final val scalaCompat    = "2.6.0"
   final val scalaReflect   = "2.13.7"
-  final val googleClient   = "1.32.2"
+  final val googleClient   = "1.33.0"
   final val googleAuth     = "1.3.0"
   final val googleSheets   = "v4-rev20210629-1.32.1"
   final val googleDrive    = "v3-rev20211107-1.32.1"
