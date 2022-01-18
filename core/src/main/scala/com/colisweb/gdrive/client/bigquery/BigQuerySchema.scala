@@ -53,7 +53,9 @@ case class BigQuerySchema(member: Symbol) {
     consideredType match {
       case t if t =:= typeOf[Boolean]       => BOOL
       case t if t =:= typeOf[Int]           => INT64
+      case t if t =:= typeOf[Long]          => INT64
       case t if t =:= typeOf[Double]        => NUMERIC
+      case t if t =:= typeOf[Float]         => NUMERIC
       case t if t =:= typeOf[Instant]       => TIMESTAMP
       case t if t =:= typeOf[LocalDate]     => DATE
       case t if t =:= typeOf[LocalTime]     => TIME
