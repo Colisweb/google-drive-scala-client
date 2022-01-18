@@ -15,12 +15,12 @@ object Versions {
   final val catsRetry      = "2.1.1"
   final val circe          = "0.14.1"
   final val scalaCompat    = "2.6.0"
-  final val scalaReflect   = "2.13.7"
+  final val scalaReflect   = "2.13.8"
   final val googleClient   = "1.33.0"
   final val googleAuth     = "1.3.0"
   final val googleSheets   = "v4-rev20210629-1.32.1"
-  final val googleDrive    = "v3-rev20211107-1.32.1"
-  final val googleBigQuery = "2.6.1"
+  final val googleDrive    = "v3-rev20220110-1.32.1"
+  final val googleBigQuery = "2.6.2"
   final val zio            = "1.0.13"
 }
 
