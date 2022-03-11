@@ -1,7 +1,7 @@
 import sbt._
 
 object TestVersions {
-  final val scalaTest = "3.2.10"
+  final val scalaTest = "3.2.11"
   final val approvals = "1.3.0"
 }
 
@@ -16,11 +16,11 @@ object Versions {
   final val circe          = "0.14.1"
   final val scalaCompat    = "2.6.0"
   final val scalaReflect   = "2.13.8"
-  final val googleClient   = "1.33.0"
+  final val googleClient   = "1.33.2"
   final val googleAuth     = "1.5.3"
-  final val googleSheets   = "v4-rev20210629-1.32.1"
-  final val googleDrive    = "v3-rev20220110-1.32.1"
-  final val googleBigQuery = "2.6.2"
+  final val googleSheets   = "v4-rev20220221-1.32.1"
+  final val googleDrive    = "v3-rev20220214-1.32.1"
+  final val googleBigQuery = "2.9.1"
   final val zio            = "1.0.13"
 }
 
