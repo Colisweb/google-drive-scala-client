@@ -14,7 +14,7 @@ object Versions {
   final val catsEffect     = "2.5.4"
   final val catsRetry      = "2.1.1"
   final val circe          = "0.14.1"
-  final val scalaCompat    = "2.6.0"
+  final val scalaCompat    = "2.7.0"
   final val scalaReflect   = "2.13.8"
   final val googleClient   = "1.33.2"
   final val googleAuth     = "1.6.0"
