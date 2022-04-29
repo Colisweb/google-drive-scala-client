@@ -1,7 +1,7 @@
 import sbt._
 
 object TestVersions {
-  final val scalaTest = "3.2.11"
+  final val scalaTest = "3.2.12"
   final val approvals = "1.3.0"
 }
 
