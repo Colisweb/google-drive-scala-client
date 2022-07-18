@@ -69,10 +69,11 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
       }
   }
 
-  def share(fileId: String, email: String, role: GoogleDriveRole): Permission =
+  def share(fileId: String, email: String, role: GoogleDriveRole, sendEmailNotification: Boolean = true): Permission =
     service
       .permissions()
       .create(fileId, (new Permission).setEmailAddress(email).setType("user").setRole(role.toString))
+      .setSendNotificationEmail(sendEmailNotification)
       .execute()
 
   def uploadFile(
