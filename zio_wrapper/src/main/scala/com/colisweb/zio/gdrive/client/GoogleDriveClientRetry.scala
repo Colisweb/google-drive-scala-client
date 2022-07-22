@@ -64,9 +64,14 @@ class GoogleDriveClientRetry(
       client.move(targetId, parentId)
     ).unit
 
-  def share(fileId: String, email: String, role: GoogleDriveRole): RIO[Clock, Permission] =
+  def share(
+      fileId: String,
+      email: String,
+      role: GoogleDriveRole,
+      sendEmailNotification: Boolean = true
+  ): RIO[Clock, Permission] =
     retry(
-      client.share(fileId, email, role)
+      client.share(fileId, email, role, sendEmailNotification)
     )
 
   def getParents(id: String): RIO[Clock, List[String]] =
