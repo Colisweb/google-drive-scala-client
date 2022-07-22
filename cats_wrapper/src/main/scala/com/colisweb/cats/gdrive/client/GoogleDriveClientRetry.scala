@@ -68,9 +68,14 @@ class GoogleDriveClientRetry[F[_]](
       client.move(targetId, parentId)
     ) *> S.unit
 
-  def share(fileId: String, email: String, role: GoogleDriveRole): F[Permission] =
+  def share(
+      fileId: String,
+      email: String,
+      role: GoogleDriveRole,
+      sendEmailNotification: Boolean = true
+  ): F[Permission] =
     retry(
-      client.share(fileId, email, role)
+      client.share(fileId, email, role, sendEmailNotification)
     )
 
   def findFileInSubFolderOf(
