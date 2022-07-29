@@ -1,6 +1,6 @@
 import CompileFlags._
 
-lazy val scala212               = "2.12.15"
+lazy val scala212               = "2.12.16"
 lazy val scala213               = "2.13.8"
 lazy val supportedScalaVersions = List(scala213, scala212)
 
