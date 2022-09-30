@@ -15,13 +15,13 @@ object Versions {
   final val catsRetry      = "2.1.1"
   final val circe          = "0.14.3"
   final val scalaCompat    = "2.8.1"
-  final val scalaReflect   = "2.13.8"
+  final val scalaReflect   = "2.13.9"
   final val googleClient   = "2.0.0"
   final val googleAuth     = "1.11.0"
   final val googleSheets   = "v4-rev20220620-2.0.0"
   final val googleDrive    = "v3-rev20220815-2.0.0"
   final val googleBigQuery = "2.16.1"
-  final val zio            = "1.0.16"
+  final val zio            = "1.0.17"
 }
 
 object Dependencies {
