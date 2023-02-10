@@ -13,7 +13,7 @@ object TestDependencies {
 object Versions {
   final val catsEffect     = "2.5.5"
   final val catsRetry      = "2.1.1"
-  final val circe          = "0.14.3"
+  final val circe          = "0.14.4"
   final val scalaCompat    = "2.9.0"
   final val scalaReflect   = "2.13.10"
   final val googleClient   = "2.2.0"
