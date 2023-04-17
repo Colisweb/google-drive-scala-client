@@ -1,11 +1,12 @@
 package com.colisweb.gdrive.client
 
-import java.io.{File, PrintWriter}
-
-import com.colisweb.gdrive.client.drive.{CsvFileType, GoogleDriveClient, GoogleSearchResult}
+import com.colisweb.gdrive.client.drive.{CsvFileType, ExcelSpreadsheetType, GoogleDriveClient, GoogleSearchResult}
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+
+import java.io.File
+import java.nio.file.Paths
 
 class GoogleDriveClientTest extends AnyFlatSpec with Matchers {
 
@@ -14,20 +15,22 @@ class GoogleDriveClientTest extends AnyFlatSpec with Matchers {
     val authenticator = GoogleAuthenticator.fromResource("google-credentials.json", Some("RoutingAnalysis"))
     val drive         = new GoogleDriveClient(authenticator)
 
-    val file = new File("/tmp/file")
-    val pw   = new PrintWriter(file)
-    pw.write("title; date")
-    pw.close()
+    val csvFile   = getFile("test_drive.csv")
+    val excelFile = getFile("test_drive.csv")
 
-    val folderId = drive.createFolder("folder_name")
-    val fileId   = drive.uploadFileTo(folderId, file, "filename", CsvFileType, None)
+    val folderId    = drive.createFolder("folder_name")
+    val csvFileId   = drive.uploadFileTo(folderId, csvFile, "csvFile", CsvFileType, None)
+    val excelFileId = drive.uploadFileTo(folderId, excelFile, "excelFile", ExcelSpreadsheetType, None)
 
     val l = drive.listFilesInFolder(folderId)
 
-    l.head should be(GoogleSearchResult(fileId, "filename"))
+    l should contain theSameElementsAs List(
+      GoogleSearchResult(excelFileId, "excelFile"),
+      GoogleSearchResult(csvFileId, "csvFile")
+    )
 
-    file.delete()
-    drive.delete(fileId)
+    drive.delete(csvFileId)
+    drive.delete(excelFileId)
     drive.delete(folderId)
   }
 
@@ -39,4 +42,5 @@ class GoogleDriveClientTest extends AnyFlatSpec with Matchers {
     a[GoogleJsonResponseException] should be thrownBy drive.createFolderTo("non-existing-id", "folder_name")
   }
 
+  def getFile(fileName: String): File = Paths.get(s"src/test/resources/com/colisweb/gdrive/client/$fileName").toFile
 }
