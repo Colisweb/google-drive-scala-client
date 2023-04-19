@@ -16,7 +16,7 @@ class GoogleDriveClientTest extends AnyFlatSpec with Matchers {
     val drive         = new GoogleDriveClient(authenticator)
 
     val csvFile   = getFile("test_drive.csv")
-    val excelFile = getFile("test_drive.csv")
+    val excelFile = getFile("test_drive.xlsx")
 
     val folderId    = drive.createFolder("folder_name")
     val csvFileId   = drive.uploadFileTo(folderId, csvFile, "csvFile", CsvFileType, None)
