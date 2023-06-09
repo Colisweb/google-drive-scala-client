@@ -1,7 +1,7 @@
 import CompileFlags._
 
 lazy val scala212               = "2.12.18"
-lazy val scala213               = "2.13.10"
+lazy val scala213               = "2.13.11"
 lazy val supportedScalaVersions = List(scala213, scala212)
 
 ThisBuild / organization       := "com.colisweb"
