@@ -45,7 +45,7 @@ class BigQueryTable[T](
     executeQuery(query, "updateJob")
   }
 
-  def deleteRows(conditions: List[WhereCondition]): TableResult = {
+  def deleteRows(conditions: Seq[WhereCondition]): TableResult = {
     val where = conditions.map(_.sql).mkString(" and ")
     val query = s"delete from `$datasetName.$tableName` where $where"
     executeQuery(query, "deleteJob")
@@ -84,7 +84,7 @@ class BigQueryTable[T](
     s"update `$datasetName.$tableName` set $set where $where"
   }
 
-  def uploadData(data: List[T]): Try[Job] = {
+  def uploadData(data: Seq[T]): Try[Job] = {
     val writeJobConfig =
       WriteChannelConfiguration
         .newBuilder(tableId)
@@ -121,7 +121,7 @@ object BigQueryTable {
     def sql: String = s"$columnName = $requiredValue"
   }
 
-  final case class WhereConditionList(columnName: String, values: List[String]) extends WhereCondition {
+  final case class WhereConditionList(columnName: String, values: Seq[String]) extends WhereCondition {
     def sql: String = s"$columnName in (${values.map(v => s"'$v'").mkString(", ")})"
   }
 
