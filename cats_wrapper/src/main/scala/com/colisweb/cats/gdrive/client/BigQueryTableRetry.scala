@@ -32,13 +32,17 @@ class BigQueryTableRetry[F[_], T](
   lazy val storedTable: F[Option[Table]]   = retry(bigQueryTable.storedTable)
   lazy val storedSchema: F[Option[Schema]] = retry(bigQueryTable.storedSchema)
 
-  def appendRows(data: List[T], allowSchemaUpdate: Boolean): F[Unit] =
+  def appendRows(data: Iterable[T], allowSchemaUpdate: Boolean): F[Unit] =
     F.whenA(allowSchemaUpdate)(maybeUpdateSchema()) *> uploadData(data)
 
-  def updateRows(data: List[T], fieldsToUpdate: Map[String, T => String], conditions: List[WhereCondition]): F[Unit] =
-    data.traverse(row => retry(bigQueryTable.updateRow(fieldsToUpdate, conditions)(row))).void
+  def updateRows(
+      data: Iterable[T],
+      fieldsToUpdate: Map[String, T => String],
+      conditions: Iterable[WhereCondition]
+  ): F[Unit] =
+    data.toVector.traverse(row => retry(bigQueryTable.updateRow(fieldsToUpdate, conditions)(row))).void
 
-  def deleteRows(conditions: List[WhereCondition]): F[Unit] =
+  def deleteRows(conditions: Iterable[WhereCondition]): F[Unit] =
     retry(bigQueryTable.deleteRows(conditions)).void
 
   def executeQuery(query: String, jobPrefix: String): F[TableResult] =
@@ -53,7 +57,7 @@ class BigQueryTableRetry[F[_], T](
   def waitForJob(jobId: JobId): F[Try[Job]] =
     retry(bigQueryTable.waitForJob(jobId))
 
-  def uploadData(data: List[T]): F[Unit] = {
+  def uploadData(data: Iterable[T]): F[Unit] = {
     val writeJobConfig =
       WriteChannelConfiguration
         .newBuilder(TableId.of(datasetName, tableName))
@@ -67,7 +71,9 @@ class BigQueryTableRetry[F[_], T](
       .fromAutoCloseable(F.delay(bigQueryTable.bigQueryService.writer(jobId, writeJobConfig)))
       .onFinalize(waitForJob(jobId).void)
       .use { writer =>
-        data.traverse(d => retry(writer.write(ByteBuffer.wrap(s"${d.asJson.noSpaces}\n".getBytes(Charsets.UTF_8)))))
+        data.toVector.traverse(d =>
+          retry(writer.write(ByteBuffer.wrap(s"${d.asJson.noSpaces}\n".getBytes(Charsets.UTF_8))))
+        )
       }
       .void
   }

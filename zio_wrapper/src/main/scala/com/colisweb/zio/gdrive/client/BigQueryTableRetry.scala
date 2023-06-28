@@ -29,20 +29,20 @@ class BigQueryTableRetry[T](
   lazy val storedTable: RIO[Clock, Option[Table]]   = retry(bigQueryTable.storedTable)
   lazy val storedSchema: RIO[Clock, Option[Schema]] = retry(bigQueryTable.storedSchema)
 
-  def appendRows(data: List[T], allowSchemaUpdate: Boolean): RIO[Clock, Unit] =
+  def appendRows(data: Iterable[T], allowSchemaUpdate: Boolean): RIO[Clock, Unit] =
     (maybeUpdateSchema().when(allowSchemaUpdate)
       *> uploadData(data))
 
   def updateRows(
-      data: List[T],
+      data: Iterable[T],
       fieldsToUpdate: Map[String, T => String],
-      conditions: List[WhereCondition]
+      conditions: Iterable[WhereCondition]
   ): RIO[Clock, Unit] =
     ZIO
       .foreach(data)(row => retry(bigQueryTable.updateRow(fieldsToUpdate, conditions)(row)))
       .unit
 
-  def deleteRows(conditions: List[WhereCondition]): RIO[Clock, Unit] =
+  def deleteRows(conditions: Iterable[WhereCondition]): RIO[Clock, Unit] =
     retry(bigQueryTable.deleteRows(conditions)).unit
 
   def executeQuery(query: String, jobPrefix: String): RIO[Clock, TableResult] =
@@ -57,7 +57,7 @@ class BigQueryTableRetry[T](
   private def waitForJob(jobId: JobId): RIO[Clock, Try[Job]] =
     retry(bigQueryTable.waitForJob(jobId))
 
-  def uploadData(data: List[T]): RIO[Clock, Unit] = {
+  def uploadData(data: Iterable[T]): RIO[Clock, Unit] = {
     val writeJobConfig =
       WriteChannelConfiguration
         .newBuilder(TableId.of(datasetName, tableName))

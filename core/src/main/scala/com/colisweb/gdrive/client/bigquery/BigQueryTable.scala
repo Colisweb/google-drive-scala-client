@@ -31,21 +31,25 @@ class BigQueryTable[T](
   lazy val storedTable: Option[Table]   = Option(bigQueryService.getTable(tableId))
   lazy val storedSchema: Option[Schema] = storedTable.map(_.getDefinition[TableDefinition].getSchema)
 
-  def appendRows(data: List[T], allowSchemaUpdate: Boolean): Try[Job] = {
-    if (allowSchemaUpdate) maybeUpdateSchema() else ()
+  def appendRows(data: Iterable[T], allowSchemaUpdate: Boolean): Try[Job] = {
+    if (allowSchemaUpdate) maybeUpdateSchema()
     uploadData(data)
   }
 
-  def updateRows(data: List[T], fieldsToUpdate: Map[String, T => String], conditions: List[WhereCondition]): Unit =
+  def updateRows(
+      data: Iterable[T],
+      fieldsToUpdate: Map[String, T => String],
+      conditions: Iterable[WhereCondition]
+  ): Unit =
     data.foreach(updateRow(fieldsToUpdate, conditions))
 
-  def updateRow(fieldsToUpdate: Map[String, T => String], conditions: List[WhereCondition])(row: T): TableResult = {
-    val toUpdate = fieldsToUpdate.toList.map { case (colName, value) => (colName, value(row)) }.toMap
+  def updateRow(fieldsToUpdate: Map[String, T => String], conditions: Iterable[WhereCondition])(row: T): TableResult = {
+    val toUpdate = fieldsToUpdate.map { case (colName, value) => (colName, value(row)) }.toMap
     val query    = updateRowQuery(toUpdate, conditions)
     executeQuery(query, "updateJob")
   }
 
-  def deleteRows(conditions: Seq[WhereCondition]): TableResult = {
+  def deleteRows(conditions: Iterable[WhereCondition]): TableResult = {
     val where = conditions.map(_.sql).mkString(" and ")
     val query = s"delete from `$datasetName.$tableName` where $where"
     executeQuery(query, "deleteJob")
@@ -65,8 +69,7 @@ class BigQueryTable[T](
         remoteTable.toBuilder.setDefinition(StandardTableDefinition.of(schema)).build().update()
         ()
 
-      case (_, _) =>
-        ()
+      case _ => ()
     }
 
   def getAllRows: Iterable[FieldValueList] =
@@ -78,13 +81,13 @@ class BigQueryTable[T](
     Try(bigQueryService.getJob(jobId).waitFor())
 
   // TODO: change fieldsToUpdate to be able to update fields with numeric values (here we only update with strings)
-  def updateRowQuery(fieldsToUpdate: Map[String, String], conditions: List[WhereCondition]): String = {
+  def updateRowQuery(fieldsToUpdate: Map[String, String], conditions: Iterable[WhereCondition]): String = {
     val where = conditions.map(_.sql).mkString(" and ")
     val set   = fieldsToUpdate.map { case (col, value) => s"$col = '$value'" }.mkString(", ")
     s"update `$datasetName.$tableName` set $set where $where"
   }
 
-  def uploadData(data: Seq[T]): Try[Job] = {
+  def uploadData(data: Iterable[T]): Try[Job] = {
     val writeJobConfig =
       WriteChannelConfiguration
         .newBuilder(tableId)
@@ -121,7 +124,7 @@ object BigQueryTable {
     def sql: String = s"$columnName = $requiredValue"
   }
 
-  final case class WhereConditionList(columnName: String, values: Seq[String]) extends WhereCondition {
+  final case class WhereConditionList(columnName: String, values: Iterable[String]) extends WhereCondition {
     def sql: String = s"$columnName in (${values.map(v => s"'$v'").mkString(", ")})"
   }
 
