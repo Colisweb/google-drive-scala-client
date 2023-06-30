@@ -17,7 +17,7 @@ object Versions {
   final val scalaCompat    = "2.11.0"
   final val scalaReflect   = "2.13.11"
   final val googleClient   = "2.2.0"
-  final val googleAuth     = "1.18.0"
+  final val googleAuth     = "1.19.0"
   final val googleSheets   = "v4-rev20230526-2.0.0"
   final val googleDrive    = "v3-rev20230610-2.0.0"
   final val googleBigQuery = "2.29.0"
