@@ -9,15 +9,12 @@ import java.io.File
 import java.nio.file.Paths
 
 class GoogleDriveClientTest extends AnyFlatSpec with Matchers {
+  val authenticator = GoogleAuthenticator.fromResource("google-credentials.json", Some("RoutingAnalysis"))
+  val drive         = new GoogleDriveClient(authenticator)
+  val csvFile       = getFile("test_drive.csv")
+  val excelFile     = getFile("test_drive.xlsx")
 
   it should "test listing files after upload a file in a new folder" in {
-
-    val authenticator = GoogleAuthenticator.fromResource("google-credentials.json", Some("RoutingAnalysis"))
-    val drive         = new GoogleDriveClient(authenticator)
-
-    val csvFile   = getFile("test_drive.csv")
-    val excelFile = getFile("test_drive.xlsx")
-
     val folderId    = drive.createFolder("folder_name")
     val csvFileId   = drive.uploadFileTo(folderId, csvFile, "csvFile", CsvFileType, None)
     val excelFileId = drive.uploadFileTo(folderId, excelFile, "excelFile", ExcelSpreadsheetType, None)
@@ -34,11 +31,21 @@ class GoogleDriveClientTest extends AnyFlatSpec with Matchers {
     drive.delete(folderId)
   }
 
+  it should "upload a file in a shared drive" in {
+    val sharedDriveFolderId = "1SbEskN8Sjf7ScEPMU__th0Y0JLe-mAK_"
+    val folderId            = drive.createFolder("can be safely deleted", Some(sharedDriveFolderId))
+    val csvFileId           = drive.uploadFileTo(folderId, csvFile, "csvFile", CsvFileType, None)
+
+    val l = drive.listFilesInFolder(folderId)
+
+    l should contain theSameElementsAs List(
+      GoogleSearchResult(csvFileId, "csvFile")
+    )
+    // Note : this test keeps creating files here https://drive.google.com/drive/folders/1SbEskN8Sjf7ScEPMU__th0Y0JLe-mAK_?usp=drive_link
+    // I did not manage to remove the files automatically but the drawback does not seem too bad.
+  }
+
   it should "test uploading a folder in a non-existing parent" in {
-
-    val authenticator = GoogleAuthenticator.fromResource("google-credentials.json", Some("RoutingAnalysis"))
-    val drive         = new GoogleDriveClient(authenticator)
-
     a[GoogleJsonResponseException] should be thrownBy drive.createFolderTo("non-existing-id", "folder_name")
   }
 

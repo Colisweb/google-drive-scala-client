@@ -9,6 +9,7 @@ import com.google.api.services.drive.model.{FileList, Permission, File => DriveF
 import com.google.auth.http.HttpCredentialsAdapter
 
 import java.io.{File, InputStream}
+import java.util.Collections
 import scala.annotation.tailrec
 import scala.util.chaining._
 
@@ -44,6 +45,7 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
     service
       .files()
       .delete(fileId)
+      .setSupportsAllDrives(true)
       .execute()
 
     ()
@@ -59,6 +61,8 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
       .setQ(query)
       .setSpaces("drive")
       .setFields("files(id, name)")
+      .setSupportsAllDrives(true)
+      .setIncludeItemsFromAllDrives(true)
       .execute()
       .getFiles
       .asScalaListNotNull
@@ -91,23 +95,31 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
 
     service.files
       .create(driveFileMetadata, content)
+      .setSupportsAllDrives(true)
       .setFields("id")
       .execute
       .getId
 
   }
 
-  def createFolder(name: String): String = {
+  def createFolder(name: String, parentId: Option[String] = None): String = {
     val folderMetadata =
       new DriveFile()
         .setName(name)
         .setMimeType(GoogleMimeType.driveFolder)
 
-    service.files
-      .create(folderMetadata)
-      .setFields("id")
-      .execute
-      .getId
+    val create = parentId match {
+      case Some(parent) =>
+        service.files
+          .create(folderMetadata.setParents(Collections.singletonList(parent)))
+          .setFields("id, parents")
+      case None =>
+        service.files
+          .create(folderMetadata)
+          .setFields("id")
+    }
+    create.setSupportsAllDrives(true).execute.getId
+
   }
 
   def move(targetId: String, parentId: String): Boolean = {
@@ -127,6 +139,7 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
         .setRemoveParents(previousParents)
         .setAddParents(parentId)
         .setFields("id, parents")
+        .setSupportsAllDrives(true)
         .execute()
 
     updatedFile.getParents.asScalaListNotNull
