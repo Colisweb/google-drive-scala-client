@@ -22,7 +22,7 @@ class GoogleDriveClientRetry[F[_]](
 
   val client = new GoogleDriveClient(authenticator)
 
-  def uploadFileTo(
+  def uploadFile(
       folderId: String,
       file: File,
       driveFilename: String,
@@ -30,12 +30,12 @@ class GoogleDriveClientRetry[F[_]](
       outputFiletype: Option[GoogleMimeType]
   ): F[String] =
     retry(
-      client.uploadFileTo(folderId, file, driveFilename, filetype, outputFiletype)
+      client.uploadFile(folderId, file, driveFilename, filetype, outputFiletype)
     )
 
-  def createFolderTo(parentId: String, name: String): F[String] =
+  def createFolder(name: String, parentId: Option[String] = None): F[String] =
     retry(
-      client.createFolderTo(parentId, name)
+      client.createFolder(name, parentId)
     )
 
   def delete(fileId: String): F[Unit] =
@@ -46,21 +46,6 @@ class GoogleDriveClientRetry[F[_]](
   def listFilesInFolder(folderId: String): F[List[GoogleSearchResult]] =
     retry(
       client.listFilesInFolder(folderId)
-    )
-
-  def uploadFile(
-      file: File,
-      driveFilename: String,
-      filetype: GoogleMimeType,
-      outputFiletype: Option[GoogleMimeType]
-  ): F[String] =
-    retry(
-      client.uploadFile(file, driveFilename, filetype, outputFiletype)
-    )
-
-  def createFolder(name: String): F[String] =
-    retry(
-      client.createFolder(name)
     )
 
   def move(targetId: String, parentId: String): F[Unit] =

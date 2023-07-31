@@ -16,8 +16,8 @@ class GoogleDriveClientTest extends AnyFlatSpec with Matchers {
 
   it should "test listing files after upload a file in a new folder" in {
     val folderId    = drive.createFolder("folder_name")
-    val csvFileId   = drive.uploadFileTo(folderId, csvFile, "csvFile", CsvFileType, None)
-    val excelFileId = drive.uploadFileTo(folderId, excelFile, "excelFile", ExcelSpreadsheetType, None)
+    val csvFileId   = drive.uploadFile(folderId, csvFile, "csvFile", CsvFileType, None)
+    val excelFileId = drive.uploadFile(folderId, excelFile, "excelFile", ExcelSpreadsheetType, None)
 
     val l = drive.listFilesInFolder(folderId)
 
@@ -34,7 +34,7 @@ class GoogleDriveClientTest extends AnyFlatSpec with Matchers {
   it should "upload a file in a shared drive" in {
     val sharedDriveFolderId = "1SbEskN8Sjf7ScEPMU__th0Y0JLe-mAK_"
     val folderId            = drive.createFolder("can be safely deleted", Some(sharedDriveFolderId))
-    val csvFileId           = drive.uploadFileTo(folderId, csvFile, "csvFile", CsvFileType, None)
+    val csvFileId           = drive.uploadFile(folderId, csvFile, "csvFile", CsvFileType, None)
 
     val l = drive.listFilesInFolder(folderId)
 
@@ -46,7 +46,7 @@ class GoogleDriveClientTest extends AnyFlatSpec with Matchers {
   }
 
   it should "test uploading a folder in a non-existing parent" in {
-    a[GoogleJsonResponseException] should be thrownBy drive.createFolderTo("non-existing-id", "folder_name")
+    a[GoogleJsonResponseException] should be thrownBy drive.createFolder("folder_name", Some("non-existing-id"))
   }
 
   def getFile(fileName: String): File = Paths.get(s"src/test/resources/com/colisweb/gdrive/client/$fileName").toFile

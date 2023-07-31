@@ -23,22 +23,27 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
     ).pipe(builder => authenticator.applicationName.fold(builder)(builder.setApplicationName))
       .build()
 
-  def uploadFileTo(
+  def uploadFile(
       folderId: String,
       file: File,
       driveFilename: String,
       filetype: GoogleMimeType,
       outputFiletype: Option[GoogleMimeType] // possibility to convert the file to a google workspace file type
   ): String = {
-    val fileId = uploadFile(file, driveFilename, filetype, outputFiletype)
-    move(fileId, folderId)
-    fileId
-  }
+    val driveFileMetadata =
+      new DriveFile()
+        .setName(driveFilename)
+        .setMimeType(GoogleMimeType.name(outputFiletype.getOrElse(filetype)))
+        .setParents(Collections.singletonList(folderId))
 
-  def createFolderTo(parentId: String, name: String): String = {
-    val folderId = createFolder(name)
-    move(folderId, parentId)
-    folderId
+    val content = new FileContent(GoogleMimeType.name(filetype), file)
+
+    service.files
+      .create(driveFileMetadata, content)
+      .setSupportsAllDrives(true)
+      .setFields("id")
+      .execute
+      .getId
   }
 
   def delete(fileId: String): Unit = {
@@ -79,28 +84,6 @@ class GoogleDriveClient(authenticator: GoogleAuthenticator) {
       .create(fileId, (new Permission).setEmailAddress(email).setType("user").setRole(role.toString))
       .setSendNotificationEmail(sendEmailNotification)
       .execute()
-
-  def uploadFile(
-      file: File,
-      driveFilename: String,
-      filetype: GoogleMimeType,
-      outputFiletype: Option[GoogleMimeType]
-  ): String = {
-    val driveFileMetadata =
-      new DriveFile()
-        .setName(driveFilename)
-        .setMimeType(GoogleMimeType.name(outputFiletype.getOrElse(filetype)))
-
-    val content = new FileContent(GoogleMimeType.name(filetype), file)
-
-    service.files
-      .create(driveFileMetadata, content)
-      .setSupportsAllDrives(true)
-      .setFields("id")
-      .execute
-      .getId
-
-  }
 
   def createFolder(name: String, parentId: Option[String] = None): String = {
     val folderMetadata =
