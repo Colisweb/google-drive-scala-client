@@ -2,12 +2,15 @@ package com.colisweb.gdrive.client
 
 import com.colisweb.gdrive.client.drive.GoogleDriveClient
 import com.colisweb.gdrive.client.sheets.{
+  AddBigQueryDataSource,
+  GoogleGridCoordinate,
   GoogleGridProperties,
   GoogleSheetClient,
   GoogleSheetProperties,
   SheetRangeContent
 }
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
+import com.google.api.services.sheets.v4.model.{DataSourceColumnReference, PivotGroup, PivotTable}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -105,6 +108,43 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
       spreadsheetId,
       SheetRangeContent("toto!B1:A1", data)
     )
+
+    drive.delete(spreadsheetId)
+  }
+
+  it should "create a pivot table with a big query data source" in {
+    val authenticator = GoogleAuthenticator.fromResource("google-credentials.json", Some("Simulation"))
+    val drive         = new GoogleDriveClient(authenticator)
+    val sheets        = new GoogleSheetClient(authenticator)
+
+    val sheetProperties = List(GoogleSheetProperties("foo"))
+    val spreadsheetId   = sheets.createSpreadsheet("spreadsheet_name", sheetProperties)
+    val dataSourceId    = "test-data-source-id"
+
+    val sheetId = sheets.retrieveSheetsProperties(spreadsheetId).head.getSheetId
+
+    sheets.batchRequests(
+      spreadsheetId,
+      List(
+        AddBigQueryDataSource(
+          dataSourceId,
+          bigQueryProjectId = "test",
+          bigQueryTableId = "test",
+          bigQueryDatasetId = "test",
+          sheetId
+        )
+      )
+    )
+
+    val pivotTable =
+      new PivotTable().setColumns(
+        List(
+          new PivotGroup()
+            .setDataSourceColumnReference(new DataSourceColumnReference().setName("name"))
+            .setSortOrder("ASCENDING")
+        ).asJava
+      )
+    sheets.createPivotTableFromDataSource(spreadsheetId, dataSourceId, pivotTable, GoogleGridCoordinate(sheetId, 1, 1))
 
     drive.delete(spreadsheetId)
   }
