@@ -66,3 +66,22 @@ final case class InsertDimension(
     new Request().setInsertDimension(new InsertDimensionRequest().setRange(dimensionRange))
   }
 }
+
+final case class AddBigQueryDataSource(
+    dataSourceId: String,
+    bigQueryProjectId: String,
+    bigQueryTableId: String,
+    bigQueryDatasetId: String,
+    sheetId: Int
+) extends GoogleBatchRequest {
+  def request: Request = {
+    val tableSpec =
+      new BigQueryTableSpec().setTableId(bigQueryTableId).setDatasetId(bigQueryDatasetId) // need the project id ??
+    val bigQuerySpec: DataSourceSpec = new DataSourceSpec().setBigQuery(
+      new BigQueryDataSourceSpec().setProjectId(bigQueryProjectId).setTableSpec(tableSpec)
+    )
+    val dataSource = new DataSource().setDataSourceId(dataSourceId).setSpec(bigQuerySpec)
+
+    new Request().setAddDataSource(new AddDataSourceRequest().setDataSource(dataSource))
+  }
+}
