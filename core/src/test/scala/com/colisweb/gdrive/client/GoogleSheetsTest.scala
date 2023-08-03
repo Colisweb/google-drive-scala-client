@@ -3,6 +3,7 @@ package com.colisweb.gdrive.client
 import com.colisweb.gdrive.client.drive.GoogleDriveClient
 import com.colisweb.gdrive.client.sheets.{
   AddBigQueryDataSource,
+  CreatePivotTableFromDataSource,
   GoogleGridCoordinate,
   GoogleGridProperties,
   GoogleSheetClient,
@@ -136,7 +137,7 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
       )
     )
 
-    val pivotTable =
+    val pivotTable = {
       new PivotTable().setColumns(
         List(
           new PivotGroup()
@@ -144,7 +145,14 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
             .setSortOrder("ASCENDING")
         ).asJava
       )
-    sheets.createPivotTableFromDataSource(spreadsheetId, dataSourceId, pivotTable, GoogleGridCoordinate(sheetId, 1, 1))
+    }
+
+    sheets.batchRequests(
+      spreadsheetId,
+      List(
+        CreatePivotTableFromDataSource(spreadsheetId, dataSourceId, pivotTable, GoogleGridCoordinate(sheetId, 1, 1))
+      )
+    )
 
     drive.delete(spreadsheetId)
   }

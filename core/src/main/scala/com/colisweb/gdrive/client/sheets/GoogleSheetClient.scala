@@ -137,22 +137,4 @@ class GoogleSheetClient(authenticator: GoogleAuthenticator) {
       .spreadsheets()
       .batchUpdate(spreadsheetId, new BatchUpdateSpreadsheetRequest().setRequests(requests.map(_.request).asJava))
       .execute()
-
-  def createPivotTableFromDataSource(
-      spreadsheetId: String,
-      dataSourceId: String,
-      pivotTable: PivotTable,
-      gridCoordinate: GoogleGridCoordinate
-  ): BatchUpdateSpreadsheetResponse = {
-    val cellData = new CellData().setPivotTable(pivotTable.setDataSourceId(dataSourceId))
-    val rowData  = new RowData().setValues(List(cellData).asJava)
-    val updateCells =
-      new UpdateCellsRequest().setRows(List(rowData).asJava).setFields("pivotTable").setStart(gridCoordinate.toGoogle)
-    val request = new Request().setUpdateCells(updateCells)
-
-    service
-      .spreadsheets()
-      .batchUpdate(spreadsheetId, new BatchUpdateSpreadsheetRequest().setRequests(List(request).asJava))
-      .execute()
-  }
 }
