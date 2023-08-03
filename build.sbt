@@ -29,6 +29,8 @@ lazy val core = Project(id = "google-drive-scala-client", base = file("core"))
   .settings(
     libraryDependencies ++= Seq(
       Dependencies.circe,
+      Dependencies.circeParser,
+      Dependencies.circeGenericExtras,
       Dependencies.scalaCompat,
       Dependencies.scalaReflect,
       Dependencies.googleClient,

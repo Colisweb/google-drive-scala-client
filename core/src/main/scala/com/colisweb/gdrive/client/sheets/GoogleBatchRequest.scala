@@ -4,6 +4,7 @@ import com.colisweb.gdrive.client.sheets.formatting.{GoogleSheetCellFormat, Goog
 import com.google.api.services.sheets.v4.model._
 
 import scala.jdk.CollectionConverters._
+import scala.util.Try
 
 trait GoogleBatchRequest {
   def request: Request
@@ -70,21 +71,30 @@ final case class InsertDimension(
 }
 
 final case class AddBigQueryDataSource(
-    dataSourceId: String,
     bigQueryProjectId: String,
     bigQueryTableId: String,
     bigQueryDatasetId: String,
     sheetId: Int
 ) extends GoogleBatchRequest {
   def request: Request = {
-    val tableSpec =
-      new BigQueryTableSpec().setTableId(bigQueryTableId).setDatasetId(bigQueryDatasetId) // need the project id ??
+    val tableSpec = new BigQueryTableSpec().setTableId(bigQueryTableId).setDatasetId(bigQueryDatasetId)
     val bigQuerySpec: DataSourceSpec = new DataSourceSpec().setBigQuery(
       new BigQueryDataSourceSpec().setProjectId(bigQueryProjectId).setTableSpec(tableSpec)
     )
-    val dataSource = new DataSource().setDataSourceId(dataSourceId).setSpec(bigQuerySpec)
+    val dataSource = new DataSource().setSpec(bigQuerySpec)
 
     new Request().setAddDataSource(new AddDataSourceRequest().setDataSource(dataSource))
+  }
+}
+
+object AddBigQueryDataSource {
+  def extractDataSourceIdFromResponse(batchResponse: BatchUpdateSpreadsheetResponse): Option[String] = {
+    Try {
+      batchResponse.getReplies.asScala.toList.collectFirst {
+        case response if response.getAddDataSource != null =>
+          Option(response.getAddDataSource.getDataSource.getDataSourceId)
+      }.flatten
+    }.toOption.flatten
   }
 }
 
