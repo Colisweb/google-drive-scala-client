@@ -3,6 +3,8 @@ package com.colisweb.gdrive.client.sheets
 import com.colisweb.gdrive.client.sheets.formatting.{GoogleSheetCellFormat, GoogleSheetField}
 import com.google.api.services.sheets.v4.model._
 
+import scala.jdk.CollectionConverters._
+
 trait GoogleBatchRequest {
   def request: Request
 }
@@ -83,5 +85,21 @@ final case class AddBigQueryDataSource(
     val dataSource = new DataSource().setDataSourceId(dataSourceId).setSpec(bigQuerySpec)
 
     new Request().setAddDataSource(new AddDataSourceRequest().setDataSource(dataSource))
+  }
+}
+
+final case class CreatePivotTableFromDataSource(
+    spreadsheetId: String,
+    dataSourceId: String,
+    pivotTable: PivotTable,
+    gridCoordinate: GoogleGridCoordinate
+) extends GoogleBatchRequest {
+  def request: Request = {
+    val cellData = new CellData().setPivotTable(pivotTable.setDataSourceId(dataSourceId))
+    val rowData  = new RowData().setValues(List(cellData).asJava)
+    val updateCells =
+      new UpdateCellsRequest().setRows(List(rowData).asJava).setFields("pivotTable").setStart(gridCoordinate.toGoogle)
+
+    new Request().setUpdateCells(updateCells)
   }
 }
