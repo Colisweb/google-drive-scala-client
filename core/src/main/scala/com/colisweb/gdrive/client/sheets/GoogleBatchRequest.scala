@@ -88,14 +88,14 @@ final case class AddBigQueryDataSource(
 }
 
 object AddBigQueryDataSource {
-  def extractDataSourceIdFromResponse(batchResponse: BatchUpdateSpreadsheetResponse): Option[String] = {
+
+  def extractDataSourceIdFromResponse(batchResponse: BatchUpdateSpreadsheetResponse): Option[String] =
     Try {
       batchResponse.getReplies.asScala.toList.collectFirst {
         case response if response.getAddDataSource != null =>
           Option(response.getAddDataSource.getDataSource.getDataSourceId)
       }.flatten
     }.toOption.flatten
-  }
 }
 
 final case class CreatePivotTableFromDataSource(
