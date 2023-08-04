@@ -2,7 +2,7 @@ package com.colisweb.zio.gdrive.client
 
 import com.colisweb.gdrive.client.GoogleAuthenticator
 import com.colisweb.gdrive.client.sheets._
-import com.google.api.services.sheets.v4.model.{RowData, SheetProperties}
+import com.google.api.services.sheets.v4.model.{BatchUpdateSpreadsheetResponse, RowData, SheetProperties}
 import zio.clock.Clock
 import zio.{RIO, Schedule}
 
@@ -66,4 +66,12 @@ class GoogleSheetClientRetry(
     retry(
       client.batchRequests(spreadsheetId, requests)
     ).unit
+
+  def batchRequestsWithResponse(
+      spreadsheetId: String,
+      requests: List[GoogleBatchRequest]
+  ): RIO[Clock, BatchUpdateSpreadsheetResponse] =
+    retry(
+      client.batchRequests(spreadsheetId, requests)
+    )
 }
