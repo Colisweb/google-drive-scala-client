@@ -8,12 +8,13 @@ import com.colisweb.gdrive.client.sheets.{
   CreatePivotTableFromDataSource,
   GoogleGridCoordinate,
   GoogleGridProperties,
+  GooglePivotTable,
   GoogleSheetClient,
   GoogleSheetProperties,
   SheetRangeContent
 }
+import com.colisweb.gdrive.client.sheets.GooglePivotTable._
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
-import com.google.api.services.sheets.v4.model.{DataSourceColumnReference, PivotGroup, PivotTable}
 import io.circe.Codec
 import io.circe.generic.extras.Configuration
 import io.circe.generic.extras.semiauto._
@@ -148,15 +149,10 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
     val dataSourceId = extractDataSourceIdFromResponse(addBigQueryDataSourceResponse)
     dataSourceId.isDefined shouldBe true
 
-    val pivotTable = {
-      new PivotTable().setColumns(
-        List(
-          new PivotGroup()
-            .setDataSourceColumnReference(new DataSourceColumnReference().setName("name"))
-            .setSortOrder("ASCENDING")
-        ).asJava
-      )
-    }
+    val pivotTable = GooglePivotTable(
+      rows = List(GooglePivotGroup("name", "ASCENDING"), GooglePivotGroup("date", "ASCENDING")),
+      values = Nil
+    )
 
     sheets.batchRequests(
       spreadsheetId,
@@ -164,7 +160,7 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
         CreatePivotTableFromDataSource(
           spreadsheetId,
           dataSourceId.get,
-          pivotTable,
+          pivotTable.toGoogle,
           GoogleGridCoordinate(sheetId, 1, 1)
         )
       )
