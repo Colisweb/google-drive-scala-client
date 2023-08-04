@@ -44,7 +44,6 @@ class GoogleDriveClientRetry(
       client.listFilesInFolder(folderId)
     )
 
-
   def move(targetId: String, parentId: String): RIO[Clock, Unit] =
     retry(
       client.move(targetId, parentId)
