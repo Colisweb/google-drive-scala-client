@@ -100,12 +100,11 @@ object AddBigQueryDataSource {
 
 final case class CreatePivotTableFromDataSource(
     spreadsheetId: String,
-    dataSourceId: String,
-    pivotTable: PivotTable,
+    pivotTable: GooglePivotTable,
     gridCoordinate: GoogleGridCoordinate
 ) extends GoogleBatchRequest {
   def request: Request = {
-    val cellData = new CellData().setPivotTable(pivotTable.setDataSourceId(dataSourceId))
+    val cellData = new CellData().setPivotTable(pivotTable.toGoogle)
     val rowData  = new RowData().setValues(List(cellData).asJava)
     val updateCells =
       new UpdateCellsRequest().setRows(List(rowData).asJava).setFields("pivotTable").setStart(gridCoordinate.toGoogle)
