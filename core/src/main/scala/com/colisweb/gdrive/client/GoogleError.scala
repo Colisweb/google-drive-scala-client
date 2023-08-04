@@ -9,3 +9,5 @@ final case class SpreadsheetNotFound(keywords: String) extends GoogleError
 final case class CsvFileNotFound(keywords: String) extends GoogleError
 
 final case class FileNotFound(keywords: String) extends GoogleError
+
+final case class DataSourceIdNotFound(keywords: String) extends GoogleError

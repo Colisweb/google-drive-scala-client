@@ -5,12 +5,17 @@ import com.google.api.services.sheets.v4.model.{DataSourceColumnReference, Pivot
 
 import scala.jdk.CollectionConverters._
 
-final case class GooglePivotTable(rows: List[GooglePivotGroup], values: List[GooglePivotValue]) {
+final case class GooglePivotTable(
+    rows: List[GooglePivotGroup],
+    values: List[GooglePivotValue],
+    dataSourceId: Option[String] = None
+) {
 
   def toGoogle: PivotTable =
     new PivotTable()
       .setRows(rows.map(_.toGoogle).asJava)
       .setValues(values.map(_.toGoogle).asJava)
+      .setDataSourceId(dataSourceId.orNull)
 }
 
 object GooglePivotTable {
