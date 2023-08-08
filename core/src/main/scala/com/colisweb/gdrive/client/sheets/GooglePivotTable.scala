@@ -22,9 +22,9 @@ object GooglePivotTable {
 
   sealed trait GoogleSummarizedFunction { val value: String }
 
-  case object Average extends GoogleSummarizedFunction { override val value = "AVERAGE" }
-  case object Counta  extends GoogleSummarizedFunction { override val value = "COUNTA"  }
-  case object Stdev   extends GoogleSummarizedFunction { override val value = "STDEV"   }
+  case object Average           extends GoogleSummarizedFunction { override val value = "AVERAGE" }
+  case object CountA            extends GoogleSummarizedFunction { override val value = "COUNTA"  }
+  case object StandardDeviation extends GoogleSummarizedFunction { override val value = "STDEV"   }
 
   final case class GooglePivotGroup(columnReference: String, sortOrder: String) {
 

@@ -23,8 +23,8 @@ class BigQueryTableRetry[T](
     retryPolicy: Schedule[Any, Throwable, Any] = RetryPolicies.default
 )(implicit encoder: Encoder[T]) {
 
-  private val bigQueryTable = new BigQueryTable(credentials, projectId, datasetName, tableName, schema)(encoder)
-  private val retry         = new Retry(retryPolicy)
+  val bigQueryTable = new BigQueryTable(credentials, projectId, datasetName, tableName, schema)(encoder)
+  private val retry = new Retry(retryPolicy)
 
   lazy val storedTable: RIO[Clock, Option[Table]]   = retry(bigQueryTable.storedTable)
   lazy val storedSchema: RIO[Clock, Option[Schema]] = retry(bigQueryTable.storedSchema)
