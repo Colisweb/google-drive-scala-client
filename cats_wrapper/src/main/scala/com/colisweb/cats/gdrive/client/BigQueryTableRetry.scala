@@ -26,7 +26,7 @@ class BigQueryTableRetry[F[_], T](
 )(implicit F: Sync[F], timer: Timer[F], encoder: Encoder[T])
     extends Retry[F](retryPolicy, onError) {
 
-  private val bigQueryTable =
+  val bigQueryTable =
     new BigQueryTable(authenticator.credentials, projectId, datasetName, tableName, schema)(encoder)
 
   lazy val storedTable: F[Option[Table]]   = retry(bigQueryTable.storedTable)
