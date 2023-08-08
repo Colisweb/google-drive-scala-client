@@ -156,14 +156,7 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
 
     sheets.batchRequests(
       spreadsheetId,
-      List(
-        CreatePivotTableFromDataSource(
-          spreadsheetId,
-          dataSourceId.get,
-          pivotTable.toGoogle,
-          GoogleGridCoordinate(sheetId, 1, 1)
-        )
-      )
+      List(CreatePivotTableFromDataSource(spreadsheetId, pivotTable, GoogleGridCoordinate(sheetId, 1, 1)))
     )
 
     drive.delete(spreadsheetId)
