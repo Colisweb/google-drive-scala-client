@@ -78,8 +78,11 @@ final case class AddBigQueryDataSource(
     query: Option[String] = None
 ) extends GoogleBatchRequest {
   def request: Request = {
-    val tableSpec       = new BigQueryTableSpec().setTableId(bigQueryTableId).setDatasetId(bigQueryDatasetId)
-    val sourceSpec      = new BigQueryDataSourceSpec().setProjectId(bigQueryProjectId).setTableSpec(tableSpec)
+    val tableSpec = new BigQueryTableSpec()
+      .setTableProjectId(bigQueryProjectId)
+      .setTableId(bigQueryTableId)
+      .setDatasetId(bigQueryDatasetId)
+    val sourceSpec      = new BigQueryDataSourceSpec().setTableSpec(tableSpec)
     val sourceSpecQuery = query.fold(sourceSpec)(q => sourceSpec.setQuerySpec(new BigQueryQuerySpec().setRawQuery(q)))
     val bigQuerySpec    = new DataSourceSpec().setBigQuery(sourceSpecQuery)
     val dataSource      = new DataSource().setSpec(bigQuerySpec)
