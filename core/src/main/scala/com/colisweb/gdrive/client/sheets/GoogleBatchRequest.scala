@@ -74,12 +74,12 @@ final case class AddBigQueryDataSource(
     bigQueryProjectId: String,
     bigQueryTableId: String,
     bigQueryDatasetId: String,
-    sheetId: Int,
     query: Option[String] = None
 ) extends GoogleBatchRequest {
   def request: Request = {
-    val sourceSpec = query match {
-      case Some(q) => new BigQueryDataSourceSpec().setQuerySpec(new BigQueryQuerySpec().setRawQuery(q))
+    val bqDataSourceSpec = query match {
+      case Some(q) =>
+        new BigQueryDataSourceSpec().setQuerySpec(new BigQueryQuerySpec().setRawQuery(q))
       case None =>
         val tableSpec = new BigQueryTableSpec()
           .setTableProjectId(bigQueryProjectId)
@@ -88,8 +88,8 @@ final case class AddBigQueryDataSource(
         new BigQueryDataSourceSpec().setTableSpec(tableSpec)
     }
 
-    val bigQuerySpec = new DataSourceSpec().setBigQuery(sourceSpec)
-    val dataSource   = new DataSource().setSpec(bigQuerySpec)
+    val dataSourceSpec = new DataSourceSpec().setBigQuery(bqDataSourceSpec.setProjectId(bigQueryProjectId))
+    val dataSource     = new DataSource().setSpec(dataSourceSpec)
 
     new Request().setAddDataSource(new AddDataSourceRequest().setDataSource(dataSource))
   }
@@ -116,6 +116,23 @@ final case class CreatePivotTableFromDataSource(
     val rowData  = new RowData().setValues(List(cellData).asJava)
     val updateCells =
       new UpdateCellsRequest().setRows(List(rowData).asJava).setFields("pivotTable").setStart(gridCoordinate.toGoogle)
+
+    new Request().setUpdateCells(updateCells)
+  }
+}
+
+final case class CreateTableFromDataSource(
+    spreadsheetId: String,
+    table: GoogleDataSourceTable,
+    gridCoordinate: GoogleGridCoordinate
+) extends GoogleBatchRequest {
+  def request: Request = {
+    val cellData = new CellData().setDataSourceTable(table.toGoogle)
+    val rowData  = new RowData().setValues(List(cellData).asJava)
+    val updateCells = new UpdateCellsRequest()
+      .setFields("dataSourceTable")
+      .setRows(List(rowData).asJava)
+      .setStart(gridCoordinate.toGoogle)
 
     new Request().setUpdateCells(updateCells)
   }

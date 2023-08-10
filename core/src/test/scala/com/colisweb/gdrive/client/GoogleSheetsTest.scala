@@ -3,17 +3,8 @@ package com.colisweb.gdrive.client
 import com.colisweb.gdrive.client.GoogleSheetsTest.DataSourceConfig
 import com.colisweb.gdrive.client.drive.GoogleDriveClient
 import com.colisweb.gdrive.client.sheets.AddBigQueryDataSource.extractDataSourceIdFromResponse
-import com.colisweb.gdrive.client.sheets.{
-  AddBigQueryDataSource,
-  CreatePivotTableFromDataSource,
-  GoogleGridCoordinate,
-  GoogleGridProperties,
-  GooglePivotTable,
-  GoogleSheetClient,
-  GoogleSheetProperties,
-  SheetRangeContent
-}
-import com.colisweb.gdrive.client.sheets.GooglePivotTable._
+import com.colisweb.gdrive.client.sheets.GooglePivotTable.GooglePivotGroup
+import com.colisweb.gdrive.client.sheets._
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import io.circe.Codec
 import io.circe.generic.extras.Configuration
@@ -140,8 +131,7 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
           AddBigQueryDataSource(
             dataSourceConfig.bigQueryProjectId,
             dataSourceConfig.bigQueryTableId,
-            dataSourceConfig.bigQueryDatasetId,
-            sheetId
+            dataSourceConfig.bigQueryDatasetId
           )
         )
       )
