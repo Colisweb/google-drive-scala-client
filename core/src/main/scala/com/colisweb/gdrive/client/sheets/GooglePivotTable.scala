@@ -22,9 +22,10 @@ object GooglePivotTable {
 
   sealed trait GoogleSummarizedFunction { val value: String }
 
-  case object Average           extends GoogleSummarizedFunction { override val value = "AVERAGE" }
-  case object CountA            extends GoogleSummarizedFunction { override val value = "COUNTA"  }
-  case object StandardDeviation extends GoogleSummarizedFunction { override val value = "STDEV"   }
+  case object Average           extends GoogleSummarizedFunction { override val value = "AVERAGE"     }
+  case object CountA            extends GoogleSummarizedFunction { override val value = "COUNTA"      }
+  case object CountUnique       extends GoogleSummarizedFunction { override val value = "COUNTUNIQUE" }
+  case object StandardDeviation extends GoogleSummarizedFunction { override val value = "STDEV"       }
 
   final case class GooglePivotGroup(columnReference: String, sortOrder: String) {
 
@@ -32,6 +33,7 @@ object GooglePivotTable {
       new PivotGroup()
         .setDataSourceColumnReference(new DataSourceColumnReference().setName(columnReference))
         .setSortOrder(sortOrder)
+        .setShowTotals(true)
   }
 
   final case class GooglePivotValue(

@@ -17,16 +17,16 @@ import scala.util.Try
 
 class BigQueryTableRetry[F[_], T](
     authenticator: GoogleAuthenticator,
-    projectId: String,
-    datasetName: String,
-    tableName: String,
+    val projectId: String,
+    val datasetName: String,
+    val tableName: String,
     schema: Schema,
     retryPolicy: RetryPolicy[F],
     onError: (Throwable, RetryDetails) => F[Unit]
 )(implicit F: Sync[F], timer: Timer[F], encoder: Encoder[T])
     extends Retry[F](retryPolicy, onError) {
 
-  val bigQueryTable =
+  private val bigQueryTable =
     new BigQueryTable(authenticator.credentials, projectId, datasetName, tableName, schema)(encoder)
 
   lazy val storedTable: F[Option[Table]]   = retry(bigQueryTable.storedTable)
