@@ -141,7 +141,8 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
 
     val pivotTable = GooglePivotTable(
       rows = List(GooglePivotGroup("name", "ASCENDING"), GooglePivotGroup("date", "ASCENDING")),
-      values = Nil
+      values = Nil,
+      dataSourceId = dataSourceId.getOrElse("data source id")
     )
 
     sheets.batchRequests(
