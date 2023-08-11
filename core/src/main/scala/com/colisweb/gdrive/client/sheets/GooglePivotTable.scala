@@ -8,14 +8,14 @@ import scala.jdk.CollectionConverters._
 final case class GooglePivotTable(
     rows: List[GooglePivotGroup],
     values: List[GooglePivotValue],
-    dataSourceId: Option[String] = None
+    dataSourceId: String
 ) {
 
   def toGoogle: PivotTable =
     new PivotTable()
       .setRows(rows.map(_.toGoogle).asJava)
       .setValues(values.map(_.toGoogle).asJava)
-      .setDataSourceId(dataSourceId.orNull)
+      .setDataSourceId(dataSourceId)
 }
 
 object GooglePivotTable {

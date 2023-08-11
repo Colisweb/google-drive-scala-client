@@ -7,7 +7,7 @@ import scala.jdk.CollectionConverters._
 final case class GoogleDataSourceTable(
     columnsNames: List[String],
     rowLimit: Int = 1000,
-    dataSourceId: Option[String] = None
+    dataSourceId: String
 ) {
   def toGoogle: DataSourceTable =
     new DataSourceTable()
@@ -16,5 +16,5 @@ final case class GoogleDataSourceTable(
         ref.setName(name)
       }.asJava)
       .setRowLimit(rowLimit)
-      .setDataSourceId(dataSourceId.orNull)
+      .setDataSourceId(dataSourceId)
 }
