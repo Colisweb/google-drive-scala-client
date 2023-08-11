@@ -137,3 +137,10 @@ final case class CreateTableFromDataSource(
     new Request().setUpdateCells(updateCells)
   }
 }
+
+final case class RefreshDataSourceObjects(dataSourceId: String) extends GoogleBatchRequest {
+  def request: Request = {
+    val refreshDataSourceObject = new RefreshDataSourceRequest().setDataSourceId(dataSourceId)
+    new Request().setRefreshDataSource(refreshDataSourceObject)
+  }
+}
