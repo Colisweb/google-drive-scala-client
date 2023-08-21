@@ -13,6 +13,7 @@ test google-drive-scala-client:
   - .rules-only-for-master
   script:
     - gpg -q --decrypt core/src/test/resources/google-credentials.json.secret > core/src/test/resources/google-credentials.json
+    - gpg -q --decrypt core/src/test/resources/big-query-data-source-config.json.secret > core/src/test/resources/big-query-data-source-config.json
     - sbt +test
 
 unused-dependencies:
