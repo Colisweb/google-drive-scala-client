@@ -1,16 +1,19 @@
 package com.colisweb.gdrive.client
 
+import com.colisweb.gdrive.client.GoogleSheetsTest.DataSourceConfig
 import com.colisweb.gdrive.client.drive.GoogleDriveClient
-import com.colisweb.gdrive.client.sheets.{
-  GoogleGridProperties,
-  GoogleSheetClient,
-  GoogleSheetProperties,
-  SheetRangeContent
-}
+import com.colisweb.gdrive.client.sheets.AddBigQueryDataSource.extractDataSourceIdFromResponse
+import com.colisweb.gdrive.client.sheets.GooglePivotTable.GooglePivotGroup
+import com.colisweb.gdrive.client.sheets._
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
+import io.circe.Codec
+import io.circe.generic.extras.Configuration
+import io.circe.generic.extras.semiauto._
+import io.circe.parser.decode
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
+import scala.io.Source
 import scala.jdk.CollectionConverters._
 
 class GoogleSheetsTest extends AnyFlatSpec with Matchers {
@@ -108,4 +111,57 @@ class GoogleSheetsTest extends AnyFlatSpec with Matchers {
 
     drive.delete(spreadsheetId)
   }
+
+  it should "create a pivot table with a big query data source" in {
+    val authenticator        = GoogleAuthenticator.fromResource("google-credentials.json", Some("Simulation"))
+    val dataSourceConfigFile = Source.fromResource("big-query-data-source-config.json").getLines().mkString("\n")
+    val dataSourceConfig     = decode[DataSourceConfig](dataSourceConfigFile).toOption.get
+    val drive                = new GoogleDriveClient(authenticator)
+    val sheets               = new GoogleSheetClient(authenticator)
+
+    val sheetProperties = List(GoogleSheetProperties("foo"))
+    val spreadsheetId   = sheets.createSpreadsheet("spreadsheet_name", sheetProperties)
+
+    val sheetId = sheets.retrieveSheetsProperties(spreadsheetId).head.getSheetId
+
+    val addBigQueryDataSourceResponse =
+      sheets.batchRequests(
+        spreadsheetId,
+        List(
+          AddBigQueryDataSource(
+            dataSourceConfig.bigQueryProjectId,
+            dataSourceConfig.bigQueryTableId,
+            dataSourceConfig.bigQueryDatasetId
+          )
+        )
+      )
+
+    val dataSourceId = extractDataSourceIdFromResponse(addBigQueryDataSourceResponse)
+    dataSourceId.isDefined shouldBe true
+
+    val pivotTable = GooglePivotTable(
+      rows = List(GooglePivotGroup("name", "ASCENDING"), GooglePivotGroup("date", "ASCENDING")),
+      values = Nil,
+      dataSourceId = dataSourceId.getOrElse("data source id")
+    )
+
+    sheets.batchRequests(
+      spreadsheetId,
+      List(CreatePivotTableFromDataSource(spreadsheetId, pivotTable, GoogleGridCoordinate(sheetId, 1, 1)))
+    )
+
+    drive.delete(spreadsheetId)
+  }
+}
+
+object GoogleSheetsTest {
+
+  final case class DataSourceConfig(
+      bigQueryProjectId: String,
+      bigQueryTableId: String,
+      bigQueryDatasetId: String
+  )
+
+  implicit val config: Configuration                          = Configuration.default
+  implicit val dataSourceConfigCodec: Codec[DataSourceConfig] = deriveConfiguredCodec
 }

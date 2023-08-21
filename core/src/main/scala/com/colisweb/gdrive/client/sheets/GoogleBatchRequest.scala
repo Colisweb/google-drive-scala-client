@@ -3,6 +3,9 @@ package com.colisweb.gdrive.client.sheets
 import com.colisweb.gdrive.client.sheets.formatting.{GoogleSheetCellFormat, GoogleSheetField}
 import com.google.api.services.sheets.v4.model._
 
+import scala.jdk.CollectionConverters._
+import scala.util.Try
+
 trait GoogleBatchRequest {
   def request: Request
 }
@@ -64,5 +67,80 @@ final case class InsertDimension(
       .setDimension(dimension.code)
 
     new Request().setInsertDimension(new InsertDimensionRequest().setRange(dimensionRange))
+  }
+}
+
+final case class AddBigQueryDataSource(
+    bigQueryProjectId: String,
+    bigQueryTableId: String,
+    bigQueryDatasetId: String,
+    query: Option[String] = None
+) extends GoogleBatchRequest {
+  def request: Request = {
+    val bqDataSourceSpec = query match {
+      case Some(q) =>
+        new BigQueryDataSourceSpec().setQuerySpec(new BigQueryQuerySpec().setRawQuery(q))
+      case None =>
+        val tableSpec = new BigQueryTableSpec()
+          .setTableProjectId(bigQueryProjectId)
+          .setTableId(bigQueryTableId)
+          .setDatasetId(bigQueryDatasetId)
+        new BigQueryDataSourceSpec().setTableSpec(tableSpec)
+    }
+
+    val dataSourceSpec = new DataSourceSpec().setBigQuery(bqDataSourceSpec.setProjectId(bigQueryProjectId))
+    val dataSource     = new DataSource().setSpec(dataSourceSpec)
+
+    new Request().setAddDataSource(new AddDataSourceRequest().setDataSource(dataSource))
+  }
+}
+
+object AddBigQueryDataSource {
+
+  def extractDataSourceIdFromResponse(batchResponse: BatchUpdateSpreadsheetResponse): Option[String] =
+    Try {
+      batchResponse.getReplies.asScala.toList.collectFirst {
+        case response if response.getAddDataSource != null =>
+          Option(response.getAddDataSource.getDataSource.getDataSourceId)
+      }.flatten
+    }.toOption.flatten
+}
+
+final case class CreatePivotTableFromDataSource(
+    spreadsheetId: String,
+    pivotTable: GooglePivotTable,
+    gridCoordinate: GoogleGridCoordinate
+) extends GoogleBatchRequest {
+  def request: Request = {
+    val cellData = new CellData().setPivotTable(pivotTable.toGoogle)
+    val rowData  = new RowData().setValues(List(cellData).asJava)
+    val updateCells =
+      new UpdateCellsRequest().setRows(List(rowData).asJava).setFields("pivotTable").setStart(gridCoordinate.toGoogle)
+
+    new Request().setUpdateCells(updateCells)
+  }
+}
+
+final case class CreateTableFromDataSource(
+    spreadsheetId: String,
+    table: GoogleDataSourceTable,
+    gridCoordinate: GoogleGridCoordinate
+) extends GoogleBatchRequest {
+  def request: Request = {
+    val cellData = new CellData().setDataSourceTable(table.toGoogle)
+    val rowData  = new RowData().setValues(List(cellData).asJava)
+    val updateCells = new UpdateCellsRequest()
+      .setFields("dataSourceTable")
+      .setRows(List(rowData).asJava)
+      .setStart(gridCoordinate.toGoogle)
+
+    new Request().setUpdateCells(updateCells)
+  }
+}
+
+final case class RefreshDataSourceObjects(dataSourceId: String) extends GoogleBatchRequest {
+  def request: Request = {
+    val refreshDataSourceObject = new RefreshDataSourceRequest().setDataSourceId(dataSourceId)
+    new Request().setRefreshDataSource(refreshDataSourceObject)
   }
 }

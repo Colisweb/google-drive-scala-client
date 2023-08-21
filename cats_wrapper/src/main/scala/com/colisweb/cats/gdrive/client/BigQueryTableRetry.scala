@@ -17,9 +17,9 @@ import scala.util.Try
 
 class BigQueryTableRetry[F[_], T](
     authenticator: GoogleAuthenticator,
-    projectId: String,
-    datasetName: String,
-    tableName: String,
+    val projectId: String,
+    val datasetName: String,
+    val tableName: String,
     schema: Schema,
     retryPolicy: RetryPolicy[F],
     onError: (Throwable, RetryDetails) => F[Unit]
