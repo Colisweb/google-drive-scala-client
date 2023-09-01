@@ -19,6 +19,14 @@ object GoogleSheetCellFormat {
 
 }
 
+final case class DateFormat(format: String) extends GoogleSheetCellFormat {
+  val combine: CellFormat => CellFormat = _.setNumberFormat(new NumberFormat().setType("DATE").setPattern(format))
+}
+
+case object EuropeanDateFormat extends GoogleSheetCellFormat {
+  val combine: CellFormat => CellFormat = DateFormat("dd-mm-yyyy").combine
+}
+
 case object PercentageFormat extends GoogleSheetCellFormat {
   val combine: CellFormat => CellFormat = _.setNumberFormat(new NumberFormat().setType("PERCENT").setPattern("#0.00%"))
 }
