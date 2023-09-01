@@ -19,8 +19,8 @@ object GoogleSheetCellFormat {
 
 }
 
-final case class DateFormat(format: String) extends GoogleSheetCellFormat {
-  val combine: CellFormat => CellFormat = _.setNumberFormat(new NumberFormat().setType("DATE").setPattern(format))
+final case class DateFormat(dateFormat: String) extends GoogleSheetCellFormat {
+  val combine: CellFormat => CellFormat = _.setNumberFormat(new NumberFormat().setType("DATE").setPattern(dateFormat))
 }
 
 case object EuropeanDateFormat extends GoogleSheetCellFormat {
