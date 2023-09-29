@@ -21,7 +21,7 @@ object Versions {
   final val googleSheets   = "v4-rev20230815-2.0.0"
   final val googleDrive    = "v3-rev20230822-2.0.0"
   final val googleBigQuery = "2.33.1"
-  final val zio            = "1.0.18"
+  final val zio            = "2.0.18"
 }
 
 object Dependencies {
