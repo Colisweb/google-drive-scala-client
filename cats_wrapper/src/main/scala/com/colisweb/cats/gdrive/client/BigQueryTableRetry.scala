@@ -1,6 +1,6 @@
 package com.colisweb.cats.gdrive.client
 
-import cats.effect.{Resource, Sync, Timer}
+import cats.effect.{Resource, Sync}
 import cats.implicits._
 import com.colisweb.gdrive.client.GoogleAuthenticator
 import com.colisweb.gdrive.client.bigquery.BigQueryTable
@@ -14,6 +14,7 @@ import retry.{RetryDetails, RetryPolicy}
 import java.nio.ByteBuffer
 import java.util.UUID
 import scala.util.Try
+import cats.effect.Temporal
 
 class BigQueryTableRetry[F[_], T](
     authenticator: GoogleAuthenticator,
@@ -23,7 +24,7 @@ class BigQueryTableRetry[F[_], T](
     schema: Schema,
     retryPolicy: RetryPolicy[F],
     onError: (Throwable, RetryDetails) => F[Unit]
-)(implicit F: Sync[F], timer: Timer[F], encoder: Encoder[T])
+)(implicit F: Sync[F], timer: Temporal[F], encoder: Encoder[T])
     extends Retry[F](retryPolicy, onError) {
 
   private val bigQueryTable =

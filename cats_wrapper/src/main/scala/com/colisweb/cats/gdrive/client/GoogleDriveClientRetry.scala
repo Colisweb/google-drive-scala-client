@@ -1,6 +1,6 @@
 package com.colisweb.cats.gdrive.client
 
-import cats.effect.{Sync, Timer}
+import cats.effect.Sync
 import cats.implicits._
 import com.colisweb.gdrive.client.GoogleAuthenticator
 import com.colisweb.gdrive.client.GoogleUtilities._
@@ -10,13 +10,14 @@ import com.google.api.services.drive.model.{FileList, Permission}
 import retry.{RetryDetails, RetryPolicy}
 
 import java.io.{File, InputStream}
+import cats.effect.Temporal
 
 class GoogleDriveClientRetry[F[_]](
     authenticator: GoogleAuthenticator,
     retryPolicy: RetryPolicy[F],
     onError: (Throwable, RetryDetails) => F[Unit]
 )(implicit
-    timer: Timer[F],
+    timer: Temporal[F],
     S: Sync[F]
 ) extends Retry[F](retryPolicy, onError) {
 
@@ -116,6 +117,6 @@ object GoogleDriveClientRetry {
 
   def apply[F[_]: Sync](
       authenticator: GoogleAuthenticator
-  )(implicit timer: Timer[F]): GoogleDriveClientRetry[F] =
+  )(implicit timer: Temporal[F]): GoogleDriveClientRetry[F] =
     new GoogleDriveClientRetry(authenticator, Retry.defaultPolicy[F], Retry.defaultOnError[F])
 }
