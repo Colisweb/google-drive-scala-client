@@ -20,7 +20,7 @@ object Versions {
   final val googleAuth     = "1.19.0"
   final val googleSheets   = "v4-rev20230815-2.0.0"
   final val googleDrive    = "v3-rev20230822-2.0.0"
-  final val googleBigQuery = "2.32.0"
+  final val googleBigQuery = "2.33.1"
   final val zio            = "1.0.18"
 }
 
